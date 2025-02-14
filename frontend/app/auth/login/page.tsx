@@ -58,7 +58,7 @@ export default function AuthPage() {
         await new Promise(resolve => setTimeout(resolve, 100))
         window.location.href = "/questionnaire"
       } else {
-        setError(response.message)
+        setError(response.message || "Login failed")
       }
     } catch (error: any) {
       setError(error.response?.data?.message || "Login failed")

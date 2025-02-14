@@ -8,7 +8,7 @@ import ApiResponse from "../utilities/ApiResponse.js";
 import morgan from "morgan";
 import userRouter from "../routes/user.routes.js";
 const app=express();   
-const allowedOrigin = 'http://localhost:3000';
+const allowedOrigin = 'https://loan-lending-nnyfn2oa2-anshs-projects-8a0075b6.vercel.app';
 app.set("trust proxy", true);
 
 const corsOptions = {

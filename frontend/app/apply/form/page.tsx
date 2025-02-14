@@ -14,10 +14,24 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import RiskAssessment from "@/components/RiskAssessment/RiskAssessment"
+import { verifyKYC, createVirtualAccount } from '@/services/decentro'
 
 export default function LoanApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    pan: '',
+    email: '',
+    phone: '',
+    employmentType: '',
+    monthlyIncome: '',
+    bankAccount: '',
+    loanAmount: '',
+    tenure: '',
+    purpose: ''
+  })
 
   const steps = [
     { number: 1, title: "Personal Details", icon: User },
@@ -35,6 +49,32 @@ export default function LoanApplicationForm() {
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
+    try {
+      // Step 1: Verify KYC
+      const kycResult = await verifyKYC(formData.pan, formData.aadhaar)
+      
+      if (kycResult.status === 'SUCCESS') {
+        // Step 2: Create Virtual Account
+        const accountResult = await createVirtualAccount(
+          `CUST_${formData.pan}`,
+          `${formData.firstName} ${formData.lastName}`
+        )
+
+        // Store account details for later use
+        localStorage.setItem('virtualAccountId', accountResult.data.account_id)
+        
+        // Proceed to next step
+        nextStep()
+      } else {
+        throw new Error('KYC verification failed')
+      }
+    } catch (error) {
+      console.error('Form submission error:', error)
+      // Show error to user
     }
   }
 
@@ -226,7 +266,7 @@ export default function LoanApplicationForm() {
               </Button>
               
               <Button
-                onClick={nextStep}
+                onClick={handleSubmit}
                 className="bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white"
               >
                 Next Step

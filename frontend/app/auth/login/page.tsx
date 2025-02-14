@@ -12,12 +12,15 @@ import { FaGithub } from "react-icons/fa"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { authService } from "@/services/auth.service"
 import { toast } from "sonner"
+import { useTheme } from "next-themes"
+import logo from '@/public/logo.png'
 
 export default function AuthPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [mounted, setMounted] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const { theme } = useTheme()
   
   const [loginData, setLoginData] = useState({
     email: "",
@@ -99,7 +102,7 @@ export default function AuthPage() {
   return (
     <div className="flex min-h-screen">
       {/* Left side - Auth Forms */}
-      <div className="w-full lg:w-[45%] flex items-center justify-center p-8 bg-white">
+      <div className="w-full lg:w-[45%] flex items-center justify-center p-8 bg-white dark:bg-gray-900">
         <div className="w-full max-w-md space-y-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -107,9 +110,18 @@ export default function AuthPage() {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <Image src="/logo.svg" alt="Logo" width={48} height={48} className="mx-auto mb-4" />
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900">Welcome to DevFlow</h2>
-            <p className="mt-2 text-gray-600">Your complete development workflow solution</p>
+            <span className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white flex items-center justify-center gap-2">
+              Welcome to
+              <Image 
+                src={logo} 
+                alt="Logo" 
+                width={60} 
+                height={60} 
+                className="inline-block" 
+              /> 
+              FIN-AI
+            </span>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">Your complete development workflow solution</p>
           </motion.div>
 
           <Tabs defaultValue="login" className="w-full">
@@ -122,7 +134,7 @@ export default function AuthPage() {
               <form onSubmit={handleLogin} className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="login-email">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="login-email">
                       Email
                     </label>
                     <Input
@@ -131,11 +143,12 @@ export default function AuthPage() {
                       placeholder="Enter your email"
                       value={loginData.email}
                       onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="login-password">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="login-password">
                       Password
                     </label>
                     <Input
@@ -144,6 +157,7 @@ export default function AuthPage() {
                       placeholder="Enter your password"
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
@@ -151,12 +165,12 @@ export default function AuthPage() {
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <input type="checkbox" id="remember" className="rounded border-gray-300" />
-                    <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
+                    <input type="checkbox" id="remember" className="rounded border-gray-300 dark:border-gray-700 dark:bg-gray-800" />
+                    <label htmlFor="remember" className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                       Remember me
                     </label>
                   </div>
-                  <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500">
+                  <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400">
                     Forgot password?
                   </Link>
                 </div>
@@ -165,19 +179,16 @@ export default function AuthPage() {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Signing in..." : "Sign in"}
                   </Button>
-                  <Button type="button" variant="outline" className="w-full">
-                    <FaGithub className="mr-2 h-4 w-4" />
-                    Continue with GitHub
-                  </Button>
                 </div>
               </form>
             </TabsContent>
 
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-6">
-                <div className="space-y-4">
+                {/* First row - Name and Email */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-name">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-name">
                       Full Name
                     </label>
                     <Input
@@ -186,11 +197,12 @@ export default function AuthPage() {
                       placeholder="Enter your full name"
                       value={signupData.fullname}
                       onChange={(e) => setSignupData({ ...signupData, fullname: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-email">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-email">
                       Email
                     </label>
                     <Input
@@ -199,11 +211,16 @@ export default function AuthPage() {
                       placeholder="Enter your email"
                       value={signupData.email}
                       onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
+                </div>
+
+                {/* Second row - Password and Address */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-password">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-password">
                       Password
                     </label>
                     <Input
@@ -212,11 +229,12 @@ export default function AuthPage() {
                       placeholder="Create a password"
                       value={signupData.password}
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-address">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-address">
                       Address
                     </label>
                     <Input
@@ -225,11 +243,16 @@ export default function AuthPage() {
                       placeholder="Enter your address"
                       value={signupData.address}
                       onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
+                </div>
+
+                {/* Third row - State and Pincode */}
+                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-state">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-state">
                       State
                     </label>
                     <Input
@@ -238,11 +261,12 @@ export default function AuthPage() {
                       placeholder="Enter your state"
                       value={signupData.State}
                       onChange={(e) => setSignupData({ ...signupData, State: e.target.value })}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-pincode">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-pincode">
                       Pincode
                     </label>
                     <Input
@@ -251,36 +275,36 @@ export default function AuthPage() {
                       placeholder="Enter your pincode"
                       value={signupData.Pincode}
                       onChange={(e) => setSignupData({ ...signupData, Pincode: e.target.value })}
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-avatar">
-                      Profile Picture
-                    </label>
-                    <Input
-                      id="signup-avatar"
-                      type="file"
-                      accept="image/*"
-                      ref={fileInputRef}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) {
-                          setSignupData({ ...signupData, avatar: file })
-                        }
-                      }}
+                      className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                       required
                     />
                   </div>
                 </div>
 
+                {/* Profile Picture - Full width */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300" htmlFor="signup-avatar">
+                    Profile Picture
+                  </label>
+                  <Input
+                    id="signup-avatar"
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) {
+                        setSignupData({ ...signupData, avatar: file })
+                      }
+                    }}
+                    className="dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                    required
+                  />
+                </div>
+
                 <div className="space-y-4">
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Creating account..." : "Create account"}
-                  </Button>
-                  <Button type="button" variant="outline" className="w-full">
-                    <FaGithub className="mr-2 h-4 w-4" />
-                    Sign up with GitHub
                   </Button>
                 </div>
               </form>
@@ -290,23 +314,30 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Image and Features */}
-      <div className="hidden lg:block lg:w-[55%] bg-gray-50 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50" />
+      <div className="hidden lg:block lg:w-[55%] bg-gray-50 dark:bg-gray-800 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800" />
         <div className="relative h-full flex items-center justify-center p-8">
           <div className="max-w-2xl space-y-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
             >
-              <Image
-                src="/images/platform-preview.png"
-                alt="Platform preview"
-                width={800}
-                height={600}
-                className="rounded-xl shadow-2xl"
-                priority
-              />
+              {/* Loading-like elements */}
+              <div className="space-y-6">
+                <div className="w-24 h-3 bg-blue-400 rounded-full" />
+                
+                <div className="space-y-4">
+                  <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                  <div className="w-3/4 h-3 bg-gray-200 dark:bg-gray-700 rounded-full" />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 pt-4">
+                  <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+                  <div className="h-24 bg-gray-200 dark:bg-gray-700 rounded-xl" />
+                </div>
+              </div>
             </motion.div>
 
             <motion.div
@@ -315,13 +346,13 @@ export default function AuthPage() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="grid grid-cols-2 gap-6"
             >
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm">
-                <div className="text-3xl font-bold text-blue-600 mb-2">50K+</div>
-                <div className="text-sm text-gray-600">Active Developers</div>
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 shadow-sm">
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">₹50Cr+</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Total Investment</div>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm rounded-lg p-6 shadow-sm">
-                <div className="text-3xl font-bold text-blue-600 mb-2">1M+</div>
-                <div className="text-sm text-gray-600">Projects Completed</div>
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-6 shadow-sm">
+                <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">10K+</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Active Investors</div>
               </div>
             </motion.div>
           </div>

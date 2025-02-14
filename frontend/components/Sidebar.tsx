@@ -5,7 +5,9 @@ import { ChevronRight, Home, Box, BarChart2, FileText, Settings, HelpCircle, Log
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
+import logo from '@/public/logo.png'
 import { Button } from "@/components/ui/button"
+import Image from "next/image"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -110,9 +112,12 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="px-5 pt-6 space-y-5">
+          <div className="px-4 pt-6 space-y-5">
             <div className="flex items-center justify-between h-8">
-              <span className="text-gray-900 dark:text-white text-2xl font-normal font-['Inter']">FinancePro</span>
+              <div className="flex flex-col items-center  gap-0">
+              <span className="text-gray-900  dark:text-white text-lg flex font-medium font-['Inter']">
+              <Image src={logo} alt="Logo" width={55}  /><div className="flex flex-col items-center "><p>FIN-AI</p><p className="text-gray-500 dark:text-white text-xs  text-center  font-normal font-['Inter']">AI-Lending</p></div></span>
+               </div>
               <Button
                 variant="ghost"
                 size="icon"

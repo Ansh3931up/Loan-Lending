@@ -1,6 +1,8 @@
 'use client'
-
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import LoanDashboard from "@/components/LoanDashboard"
+import { authService } from "@/services/auth.service"
+import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { 
   DollarSign, 
@@ -29,7 +31,38 @@ import {
 } from "@/components/ui/select"
 
 export default function DashboardPage() {
+  const [userId, setUserId] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
   const [role, setRole] = useState<'borrower' | 'lender'>('borrower')
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userResponse = await authService.getUser();
+        console.log(userResponse);
+        if (userResponse.success && userResponse.data) {
+          setUserId(userResponse.data._id)
+        } else {
+          toast.error("Failed to load user data")
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error)
+        toast.error("Failed to load user data")
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchUser()
+  }, [])
+
+  if (loading) {
+    return <div>Loading...</div>
+  }
+
+  if (!userId) {
+    return <div>Please log in to view your dashboard</div>
+  }
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -127,6 +160,7 @@ export default function DashboardPage() {
                 : 'Find potential borrowers and manage investments'}
             </p>
           </div>
+          
           <div className="flex items-center gap-4">
             <Select value={role} onValueChange={(value: 'borrower' | 'lender') => setRole(value)}>
               <SelectTrigger className="w-[180px]">
@@ -201,6 +235,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </motion.div>
+            </div>
+
+            {/* Loan Dashboard Component */}
+            <div className="mb-8">
+              <LoanDashboard userId={userId} />
             </div>
 
             {/* Applications List */}
@@ -342,6 +381,11 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </motion.div>
+            </div>
+
+            {/* Loan Dashboard for Lender */}
+            <div className="mb-8">
+              <LoanDashboard userId={userId} />
             </div>
 
             {/* Potential Borrowers List */}

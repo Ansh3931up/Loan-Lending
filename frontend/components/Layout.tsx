@@ -2,9 +2,15 @@
 
 import { useState, ReactNode, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
+import { usePathname } from 'next/navigation'
 
 export default function Layout({ children }: { children: ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const pathname = usePathname()
+
+  // Pages where sidebar should be hidden
+  const fullScreenPaths = ['/auth/login', '/questionnaire']
+  const isFullScreenPage = fullScreenPaths.includes(pathname)
 
   // Handle click outside to close sidebar on mobile
   useEffect(() => {
@@ -20,12 +26,22 @@ export default function Layout({ children }: { children: ReactNode }) {
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    if (!isFullScreenPage) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [isFullScreenPage])
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen)
+  }
+
+  if (isFullScreenPage) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-700">
+        {children}
+      </div>
+    )
   }
 
   return (

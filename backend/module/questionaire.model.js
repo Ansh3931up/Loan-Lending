@@ -1,88 +1,111 @@
 import mongoose from "mongoose";
 
-const questionaireSchema=new mongoose.Schema({
+const answerSchema = new mongoose.Schema({
+    questionId: {
+        type: String,
+        required: true
+    },
+    answer: {
+        type: String,
+        required: true
+    }
+}, { _id: false });
+
+const questionnaireSchema = new mongoose.Schema({
     userId: {
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'completed'],
+        default: 'pending'
+    },
+    answers: [answerSchema],
+    currentQuestionIndex: {
+        type: Number,
+        default: 0
+    },
+    completedAt: {
+        type: Date,
+        default: null
     },
     age: {
-        type:Number,
-        required:true,
+        type: Number,
+        default: null
     },
     gender: {
-        type:String,
-        required:true,
+        type: String,
+        default: null
     },
     monthlyIncome: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     existingLoans: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
     outstandingLoanAmount: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     debtPercentage: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     creditCardDebt: {
-        type:Boolean,
-        required:true,
+        type: Number,
+        default: null
     },
     otherIncomeSources: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
     employmentStatus: {
-        type:String,
-        required:true,
-    }, 
+        type: String,
+        default: null
+    },
     employmentType: {
-        type:String,
-        required:true,
+        type: String,
+        default: null
     },
     yearsInCurrentJob: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     incomeSteady: {
-        type:Boolean,
-        required:true,
-    },
-    creditCardDebt: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
     cibilScore: {
-        type:Number,
-        required:true,
+        type: Number,
+        default: null
     },
     propertyOwnership: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
     investments: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     savingsAmount: {
-        type:String,
-        required:true,
+        type: Number,
+        default: null
     },
     financialDisputes: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
     guarantor: {
-        type:Boolean,
-        required:true,
+        type: Boolean,
+        default: null
     },
-})
+}, {
+    timestamps: true
+});
 
-const Questionaire=mongoose.model("Questionaire",questionaireSchema);
-export default Questionaire;
+const Questionnaire = mongoose.model("Questionnaire", questionnaireSchema);
+export default Questionnaire;

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -10,29 +10,53 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 import { FaGithub } from "react-icons/fa"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { authService } from "@/services/auth.service"
+import { toast } from "sonner"
 
 export default function AuthPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   })
+  
   const [signupData, setSignupData] = useState({
-    name: "",
+    fullname: "",
     email: "",
     password: "",
+    address: "",
+    State: "",
+    Pincode: "",
+    avatar: null as File | null,
+    role: "user" as "user" | "admin",
   })
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!mounted) return
     setLoading(true)
     try {
-      // TODO: Implement login logic
-      console.log("Login:", loginData)
-      router.push("/dashboard")
-    } catch (error) {
-      console.error(error)
+      const response = await authService.login({
+        email: loginData.email,
+        password: loginData.password,
+      })
+      if (response.success) {
+        toast.success("Login successful!")
+        await new Promise(resolve => setTimeout(resolve, 100))
+        window.location.href = "/questionnaire"
+      } else {
+        toast.error("Login failed")
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Login failed")
     } finally {
       setLoading(false)
     }
@@ -40,16 +64,36 @@ export default function AuthPage() {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!mounted) return
     setLoading(true)
     try {
-      // TODO: Implement signup logic
-      console.log("Signup:", signupData)
-      router.push("/questionaire")
-    } catch (error) {
-      console.error(error)
+      const formData = new FormData()
+      formData.append("fullname", signupData.fullname)
+      formData.append("email", signupData.email)
+      formData.append("password", signupData.password)
+      formData.append("address", signupData.address)
+      formData.append("State", signupData.State)
+      formData.append("Pincode", signupData.Pincode)
+      formData.append("role", signupData.role)
+      if (signupData.avatar) {
+        formData.append("avatar", signupData.avatar)
+      }
+
+      const response = await authService.signup(formData)
+      if (response.success) {
+        toast.success("Account created successfully!")
+        await new Promise(resolve => setTimeout(resolve, 100))
+        window.location.href = "/questionnaire"
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Signup failed")
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!mounted) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>
   }
 
   return (
@@ -140,8 +184,8 @@ export default function AuthPage() {
                       id="signup-name"
                       type="text"
                       placeholder="Enter your full name"
-                      value={signupData.name}
-                      onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
+                      value={signupData.fullname}
+                      onChange={(e) => setSignupData({ ...signupData, fullname: e.target.value })}
                       required
                     />
                   </div>
@@ -168,6 +212,63 @@ export default function AuthPage() {
                       placeholder="Create a password"
                       value={signupData.password}
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-address">
+                      Address
+                    </label>
+                    <Input
+                      id="signup-address"
+                      type="text"
+                      placeholder="Enter your address"
+                      value={signupData.address}
+                      onChange={(e) => setSignupData({ ...signupData, address: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-state">
+                      State
+                    </label>
+                    <Input
+                      id="signup-state"
+                      type="text"
+                      placeholder="Enter your state"
+                      value={signupData.State}
+                      onChange={(e) => setSignupData({ ...signupData, State: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-pincode">
+                      Pincode
+                    </label>
+                    <Input
+                      id="signup-pincode"
+                      type="number"
+                      placeholder="Enter your pincode"
+                      value={signupData.Pincode}
+                      onChange={(e) => setSignupData({ ...signupData, Pincode: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700" htmlFor="signup-avatar">
+                      Profile Picture
+                    </label>
+                    <Input
+                      id="signup-avatar"
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          setSignupData({ ...signupData, avatar: file })
+                        }
+                      }}
                       required
                     />
                   </div>

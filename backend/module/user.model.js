@@ -2,6 +2,7 @@ import mongoose, { Schema } from "mongoose";
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import crypto from "crypto";
+import { config } from '../src/index.js';
 
 const userSchema = new Schema({
     role: {
@@ -10,11 +11,7 @@ const userSchema = new Schema({
         enum: ["user", "admin"],
         default: "user"
     },
-    questionaire:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Questionaire",
-        required:true,
-    },
+
     fullname: {
         type: String,
         lowercase: true,
@@ -56,13 +53,26 @@ const userSchema = new Schema({
     },
     refreshToken: {
         type: String,
-        unique: true
+        unique: true,
+        sparse: true
     },
     forgotPasswordToken: String,
     forgotPasswordExpiry: Date,
     subscription: {
         id: String,
         status: String
+    },
+    isQuestionnaireComplete: {
+        type: Boolean,
+        default: false
+    },
+    currentQuestionnaireId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Questionnaire'
+    },
+    lastQuestionAnswered: {
+        type: Number,
+        default: 0
     }
 }, { timestamps: true });
 
@@ -85,8 +95,8 @@ userSchema.methods.generateAccessToken = function () {
             email: this.email,
             fullname: this.fullname
         },
-        process.env.ACCESS_TOKEN_SECRET,
-        { expiresIn: process.env.ACCESS_TOKEN_EXPIRY }
+        config.ACCESS_TOKEN_SECRET,
+        { expiresIn: config.ACCESS_TOKEN_EXPIRY }
     );
 }
 
@@ -95,8 +105,8 @@ userSchema.methods.generateRefreshToken = function () {
         {
             _id: this._id,
         },
-        process.env.REFRESH_TOKEN_SECRET,
-        { expiresIn: process.env.REFRESH_TOKEN_EXPIRY }
+        config.REFRESH_TOKEN_SECRET,
+        { expiresIn: config.REFRESH_TOKEN_EXPIRY }
     );
 }
 

@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { motion, AnimatePresence } from "framer-motion"
+import toast from "react-hot-toast"
 
 interface Question {
   question: string
@@ -14,40 +15,39 @@ interface Question {
 
 interface SurveyFormProps {
   questions: Question[]
-  responses: { [key: string]: string | string[] }
+  responses: { [key: string]: string }
   onInputChange: (question: string, value: string) => void
   onCheckboxChange: (question: string, option: string) => void
   onSubmit: () => void
+  userData: {
+    fullname: string
+    email: string
+    avatar: string
+  }
 }
 
-const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputChange, onCheckboxChange, onSubmit }) => {
+const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputChange, onCheckboxChange, onSubmit, userData }) => {
   const [currentIndex, setCurrentIndex] = useState(0)
-
   const totalQuestions = questions.length
-  const answeredQuestions = Object.keys(responses).length
   const currentQuestion = questions[currentIndex]
+  const answeredQuestions = Object.keys(responses).length
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onInputChange(currentQuestion.question, e.target.value)
-  }
-
-  const handleOptionClick = (option: string) => {
-    onCheckboxChange(currentQuestion.question, option)
-    // Automatically move to next question after selection
+  const handleNext = () => {
+    if (!responses[currentQuestion.question]) {
+      toast.error('Please answer the current question')
+      return
+    }
+    
     if (currentIndex < totalQuestions - 1) {
-      setTimeout(() => setCurrentIndex((prev) => prev + 1), 300)
+      setCurrentIndex(prev => prev + 1)
+    } else {
+      onSubmit()
     }
   }
 
-  const nextQuestion = () => {
-    if (currentIndex < totalQuestions - 1) {
-      setCurrentIndex((prev) => prev + 1)
-    }
-  }
-
-  const prevQuestion = () => {
+  const handlePrevious = () => {
     if (currentIndex > 0) {
-      setCurrentIndex((prev) => prev - 1)
+      setCurrentIndex(prev => prev - 1)
     }
   }
 
@@ -66,14 +66,18 @@ const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputCh
             {/* Profile header */}
             <div className="flex items-center gap-3 mb-6">
               <motion.div
-                className="w-10 h-10 rounded-full bg-white flex items-center justify-center"
+                className="w-10 h-10 rounded-full bg-white flex items-center justify-center overflow-hidden"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
-                <img src="/your-avatar.png" alt="Profile" className="w-8 h-8 rounded-full" />
+                <img 
+                  src={userData.avatar || "/default-avatar.png"} 
+                  alt={userData.fullname} 
+                  className="w-full h-full object-cover rounded-full"
+                />
               </motion.div>
               <div>
-                <h3 className="font-semibold text-gray-900">Financial Assessment</h3>
+                <h3 className="font-semibold text-gray-900">{userData.fullname}</h3>
                 <p className="text-sm text-gray-700">
                   {answeredQuestions} of {totalQuestions} Answered
                 </p>
@@ -85,8 +89,9 @@ const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputCh
               {questions.map((_, idx) => (
                 <motion.div
                   key={idx}
-                  className={`h-1 flex-1 rounded-full transition-all duration-300 ${
-                    idx === currentIndex ? "bg-black" : idx < currentIndex ? "bg-gray-700" : "bg-gray-400/30"
+                  className={`h-1 flex-1 rounded-full ${
+                    idx === currentIndex ? "bg-black" : 
+                    idx < currentIndex ? "bg-gray-700" : "bg-gray-400/30"
                   }`}
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -111,78 +116,46 @@ const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputCh
                 </h2>
 
                 <div className="space-y-3">
-                  {currentQuestion.options ? (
-                    // Options as buttons
-                    <div className="space-y-2.5">
-                      {currentQuestion.options.map((option, index) => (
-                        <motion.button
-                          key={option}
-                          onClick={() => handleOptionClick(option)}
-                          className={`w-full p-3.5 text-left rounded-xl border-2 transition-all
-                            ${
-                              (responses[currentQuestion.question] as string[])?.includes(option)
-                                ? "bg-white border-gray-800 text-gray-900"
-                                : "bg-white/80 border-transparent hover:bg-white text-gray-800"
-                            }
-                            focus:outline-none focus:ring-2 focus:ring-gray-800/20`}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.3, delay: index * 0.1 }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                        >
-                          {option}
-                        </motion.button>
-                      ))}
-                    </div>
-                  ) : (
-                    // Input field
-                    <motion.div
+                  {currentQuestion.options?.map((option, index) => (
+                    <motion.button
+                      key={option}
+                      onClick={() => onCheckboxChange(currentQuestion.question, option)}
+                      className={`w-full p-3.5 text-left rounded-xl border-2 transition-all
+                        ${
+                          responses[currentQuestion.question] === option
+                            ? "bg-white border-gray-800 text-gray-900"
+                            : "bg-white/80 border-transparent hover:bg-white text-gray-800"
+                        }
+                        focus:outline-none focus:ring-2 focus:ring-gray-800/20`}
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3 }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <Input
-                        type="text"
-                        placeholder="Type your answer"
-                        value={(responses[currentQuestion.question] as string) || ""}
-                        onChange={handleInputChange}
-                        className="w-full p-3.5 rounded-xl border-2 border-transparent
-                          bg-white/80 placeholder:text-gray-500 text-gray-900
-                          focus:border-gray-800 focus:bg-white focus:ring-2 focus:ring-gray-800/20"
-                      />
-                    </motion.div>
-                  )}
+                      {option}
+                    </motion.button>
+                  ))}
                 </div>
               </motion.div>
             </AnimatePresence>
 
             {/* Navigation */}
             <div className="flex justify-between items-center mt-6">
-              <div className="flex items-center gap-2">
-                <img src="/told-logo.png" alt="Told" className="h-6" />
-              </div>
-              <div className="flex gap-3">
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    variant="ghost"
-                    onClick={prevQuestion}
-                    disabled={currentIndex === 0}
-                    className="text-gray-700 hover:text-gray-900 hover:bg-white/50 disabled:opacity-50"
-                  >
-                    Previous
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                  <Button
-                    onClick={currentIndex === totalQuestions - 1 ? onSubmit : nextQuestion}
-                    className="bg-black hover:bg-gray-800 text-white rounded-full px-6
-                      transition-all duration-200"
-                  >
-                    {currentIndex === totalQuestions - 1 ? "Submit" : "Next"}
-                  </Button>
-                </motion.div>
-              </div>
+              <Button
+                variant="ghost"
+                onClick={handlePrevious}
+                disabled={currentIndex === 0}
+                className="text-gray-700 hover:text-gray-900 hover:bg-white/50 disabled:opacity-50"
+              >
+                Previous
+              </Button>
+              <Button
+                onClick={handleNext}
+                className="bg-black hover:bg-gray-800 text-white rounded-full px-6"
+              >
+                {currentIndex === totalQuestions - 1 ? "Submit" : "Next"}
+              </Button>
             </div>
           </Card>
         </motion.div>

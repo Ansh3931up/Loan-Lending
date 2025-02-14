@@ -1,11 +1,27 @@
 import { Router } from "express";
-import {register,login,logout,updateQuestionaire} from "../controllers/user.controller.js";
-import {upload} from "../middleware/multer.middleware.js"
-import { verifyjwt } from "../middleware/auth.middleware.js";
-const router=Router();
+import {
+    register,
+    login,
+    logout,
+    getUser,
+    getCurrentQuestionnaire,
+    submitQuestionnaire,
+    getStatus
+} from "../controllers/user.controller.js";
+import { upload } from "../middleware/multer.middleware.js"
+import { verifyJWT } from "../middleware/auth.middleware.js";
 
-router.route("/register").post(upload.single("avatar"),register);
+const router = Router();
+
+// Auth routes
+router.route("/register").post(upload.single("avatar"), register);
 router.route("/login").post(login);
-router.route("/logout").post(verifyjwt,logout);
-router.route("/updateQuestionaire").post(verifyjwt,updateQuestionaire);
+router.route("/logout").post(verifyJWT, logout);
+router.route("/getuser").get(verifyJWT, getUser);
+
+// Questionnaire routes
+router.route('/questionnaire').get(verifyJWT, getCurrentQuestionnaire);
+router.route('/questionnaire/submit').post(verifyJWT, submitQuestionnaire);
+router.route('/questionnaire/status').get(verifyJWT, getStatus);
+
 export default router;

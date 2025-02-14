@@ -1,7 +1,19 @@
 import app from "./app.js";
 import connectdb from "../database/connectdb.js";
 // import Razorpay from "razorpay";
-const PORT=3014;
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+export const config = {
+    PORT: process.env.PORT || 8000,
+    MONGODB_URI: process.env.MONGODB_URI,
+    ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
+    ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
+    REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY
+};
+
 // console.log(process.env.RAZORPAY_KEY)
 // export const razorpay= new Razorpay({
 //     key_id:process.env.RAZORPAY_KEY,
@@ -10,8 +22,8 @@ const PORT=3014;
 
 connectdb()
 .then(()=>{
-    app.listen(PORT,()=>{
-        console.log(`SUCCESSFully connected ${PORT}`);
+    app.listen(config.PORT,()=>{
+        console.log(`SUCCESSFully connected ${config.PORT}`);
     });
 
 })

@@ -3,38 +3,33 @@ import { asyncHandler } from "../utilities/asyncHandler.js";
 import ApiError from "../utilities/ApiError.js";
 import { User } from "../module/user.model.js";
 
-export const verifyjwt = asyncHandler(async (req, res, next) => {
+export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
-        // console.log('entered jwt');
-        // Extract token from cookies or Authorization header
         const token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
-        // console.log('entered jwt1');
+
         if (!token) {
-            throw new ApiError(404, "No token provided");
+            throw new ApiError(401, "Unauthorized request");
         }
 
-        // Verify JWT token
-        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        // console.log('entered jwt2');
-        // Find user by decoded token's _id
-        const user = await User.findById(decodedToken._id).select("-password -refreshToken");
-        // console.log('entered jwt3');
-        if (!user) {
-            throw new ApiError(404, "User not found");
-        }
+        try {
+            const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+            const user = await User.findById(decodedToken?._id).select("-password -refreshToken");
 
-        // Attach user object to request object
-        req.user = user;
-        // console.log('entered jwt4');
-        next();
-        // console.log('entered jwt5');
+            if (!user) {
+                // Clear invalid token cookie
+                res.clearCookie("accessToken");
+                throw new ApiError(401, "Invalid Access Token");
+            }
+
+            req.user = user;
+            next();
+        } catch (jwtError) {
+            // Clear invalid token cookie
+            res.clearCookie("accessToken");
+            throw new ApiError(401, "Invalid or expired token");
+        }
     } catch (error) {
-        console.error("Error in verifyjwt middleware:", error);
-        // Respond with an error
-        return res.status(error.status || 500).json({
-            success: false,
-            message: error.message || "Internal Server Error"
-        });
+        next(error);
     }
 });
 

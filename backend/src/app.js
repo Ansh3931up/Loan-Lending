@@ -17,7 +17,11 @@ const corsOptions = {
   // optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
   
 app.use(morgan('dev'));
 
@@ -37,7 +41,7 @@ app.use("/ping",function (res,req){
 app.use(bodyParser.json({ limit: '50mb' })); // Adjust the limit as needed
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true })); // Adjust the limit as needed
 
-app.use("/api/v1/user",userRouter);
+app.use("/api/v1/users",userRouter);
 
 
 

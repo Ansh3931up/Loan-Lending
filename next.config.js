@@ -1,9 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: [
-      'info.itemis.com',
-      'hebbkx1anhila5yf.public.blob.vercel-storage.com'
+    domains: ['res.cloudinary.com'],
+    remotePatterns: [
+      {
+        protocol: 'http',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/dyk154dvi/image/upload/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+        port: '',
+        pathname: '/dyk154dvi/image/upload/**',
+      }
     ],
   },
 }

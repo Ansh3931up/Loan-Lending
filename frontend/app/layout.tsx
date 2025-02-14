@@ -1,4 +1,6 @@
 import './globals.css'
+import { Toaster } from 'react-hot-toast';
+import { UserProvider } from '@/context/UserContext';
 
 export default function RootLayout({
   children,
@@ -7,7 +9,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <head />
+      <body>
+        <UserProvider>
+          <main>
+            {children}
+            <Toaster position="top-right" />
+          </main>
+        </UserProvider>
+      </body>
     </html>
   )
 }

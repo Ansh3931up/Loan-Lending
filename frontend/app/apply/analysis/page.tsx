@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
-import { Brain, ChartBar, Shield, CheckCircle2 } from "lucide-react"
+import { Brain,  Shield, CheckCircle2 } from "lucide-react"
+import { BarChart } from "lucide-react"
 
 export default function AnalysisPage() {
   const router = useRouter()
@@ -26,7 +27,7 @@ export default function AnalysisPage() {
     {
       title: "Generating Offers",
       description: "Calculating personalized loan terms and interest rates",
-      icon: ChartBar,
+      icon: BarChart,
       duration: 3000,
     },
     {

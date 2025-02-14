@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npm install --platform=linux --arch=x64 sharp && next build"
+    "vercel-build": "next build"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

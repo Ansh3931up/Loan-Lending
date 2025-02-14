@@ -39,8 +39,8 @@ export default function AnalysisPage() {
   ]
 
   useEffect(() => {
-    const totalDuration = analysisSteps.reduce((acc, step) => acc + step.duration, 0)
-    const incrementSize = 100 / totalDuration
+    // const totalDuration = analysisSteps.reduce((acc, step) => acc + step.duration, 0)
+    // const incrementSize = 100 / totalDuration
 
     const timer = setInterval(() => {
       setProgress(prev => {
@@ -150,7 +150,7 @@ export default function AnalysisPage() {
             transition={{ delay: 1 }}
             className="text-sm text-center text-gray-500 dark:text-gray-400 mt-8"
           >
-            This usually takes about 30 seconds. Please don't close this window.
+            This usually takes about 30 seconds. Please do not close this window.
           </motion.p>
         </div>
       </div>

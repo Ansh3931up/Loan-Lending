@@ -7,7 +7,7 @@
     "build": "next build --no-lint",
     "start": "next start",
     "lint": "next lint",
-    "vercel-build": "npm install --include=optional sharp && next build --no-lint"
+    "vercel-build": "next build --no-lint"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

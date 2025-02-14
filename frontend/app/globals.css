@@ -70,3 +70,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.backdrop-blur-sm {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}

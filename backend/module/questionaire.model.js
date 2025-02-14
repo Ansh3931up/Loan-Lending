@@ -31,78 +31,50 @@ const questionnaireSchema = new mongoose.Schema({
         type: Date,
         default: null
     },
-    age: {
+    ApplicantIncome: {
         type: Number,
         default: null
     },
-    gender: {
+    CoapplicantIncome: {
+        type: Number,
+        default: null
+    },
+    LoanAmount: {
+        type: Number,
+        default: null
+    },
+    Loan_Amount_Term: {
+        type: Number,
+        default: null
+    },
+    Credit_History: {
+        type: Number,
+        default: null
+    },
+    Gender: {
         type: String,
         default: null
     },
-    monthlyIncome: {
-        type: Number,
-        default: null
-    },
-    existingLoans: {
-        type: Boolean,
-        default: null
-    },
-    outstandingLoanAmount: {
-        type: Number,
-        default: null
-    },
-    debtPercentage: {
-        type: Number,
-        default: null
-    },
-    creditCardDebt: {
-        type: Number,
-        default: null
-    },
-    otherIncomeSources: {
-        type: Boolean,
-        default: null
-    },
-    employmentStatus: {
+    Married: {
         type: String,
         default: null
     },
-    employmentType: {
+    Dependents: {
         type: String,
         default: null
     },
-    yearsInCurrentJob: {
-        type: Number,
+    Education: {
+        type: String,
         default: null
     },
-    incomeSteady: {
-        type: Boolean,
+    Self_Employed: {
+        type: String,
         default: null
     },
-    cibilScore: {
-        type: Number,
+    Property_Area: {
+        type: String,
         default: null
-    },
-    propertyOwnership: {
-        type: Boolean,
-        default: null
-    },
-    investments: {
-        type: Number,
-        default: null
-    },
-    savingsAmount: {
-        type: Number,
-        default: null
-    },
-    financialDisputes: {
-        type: Boolean,
-        default: null
-    },
-    guarantor: {
-        type: Boolean,
-        default: null
-    },
+    }
 }, {
     timestamps: true
 });

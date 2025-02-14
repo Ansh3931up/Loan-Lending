@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { ArrowRight, Shield, Zap, LineChart, Clock, Users, DollarSign, BadgeCheck, FileText, Brain, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useEffect } from "react"
 
 export default function Home() {
   const features = [
@@ -58,6 +59,44 @@ export default function Home() {
       iconBg: "bg-[#3cc7e5]/10"
     }
   ]
+
+  const handlesee = async() => {
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predict", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          "ApplicantIncome": 5000,
+          "CoapplicantIncome": 2000,
+          "LoanAmount": 100,
+          "Loan_Amount_Term": 360,
+          "Credit_History": 1,
+          "Gender": "Male",
+          "Married": "Yes",
+          "Dependents": "0",
+          "Education": "Graduate",
+          "Self_Employed": "No",
+          "Property_Area": "Urban"
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  } 
+
+  useEffect(() => {
+    handlesee();
+  },[])
 
   return (
     <div className="min-h-screen bg-[#FBFBFA] dark:bg-slate-700">

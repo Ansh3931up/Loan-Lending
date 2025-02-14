@@ -12,7 +12,7 @@ export default function QuestionnairePopup() {
   }, []);
 
   const checkQuestionnaireStatus = async () => {
-    const response = await questionnaireService.getQuestionnaireStatus();
+    const response = await questionnaireService.getStatus();
     if (response.success && !response.isComplete) {
       setShowPopup(true);
     }

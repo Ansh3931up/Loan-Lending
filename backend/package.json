@@ -2,10 +2,11 @@
   "name": "backend",
   "version": "1.0.0",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
-    "build": "echo 'No build step needed'",
-    "dev": "nodemon src/index.js"
+    "dev": "nodemon src/index.js",
+    "build": "npm install && npm audit fix --force"
   },
   "dependencies": {
     "backend": "file:",

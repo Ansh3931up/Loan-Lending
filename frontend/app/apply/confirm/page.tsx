@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Check, Calendar, DollarSign, Percent, Clock, Download, Shield, ArrowRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../../../components/ui/button"
 import confetti from 'canvas-confetti'
 
 export default function ConfirmPage() {

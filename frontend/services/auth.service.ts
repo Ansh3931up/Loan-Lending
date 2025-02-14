@@ -70,8 +70,29 @@ export const authService = {
     }
   },
 
-  logout() {
-    localStorage.removeItem('accessToken');
+  async logout() {
+    try {
+      // Call backend logout endpoint
+      const response = await axios.post(`${API_URL}/users/logout`);
+      console.log("Logout Response:", response);
+      
+      // Clear local storage
+      localStorage.removeItem('accessToken');
+      
+      return {
+        success: true,
+        message: 'Logged out successfully'
+      };
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear local storage even if backend call fails
+      localStorage.removeItem('accessToken');
+      
+      return {
+        success: false,
+        message: error.response?.data?.message || 'Logout failed'
+      };
+    }
   }
 };
 

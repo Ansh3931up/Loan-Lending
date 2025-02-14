@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { ChevronRight, Home, Box, BarChart2, FileText, Settings, HelpCircle, LogIn, User, Layers, Phone, Info, DollarSign, Sun, Moon, LogOut, UserPlus } from "lucide-react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
+import { authService } from "@/services/auth.service"
+import toast from "react-hot-toast"
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -31,9 +33,51 @@ interface SidebarProps {
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [userData, setUserData] = useState<any>(null)
   const pathname = usePathname()
   const { theme, setTheme } = useTheme()
   const router = useRouter()
+
+  useEffect(() => {
+    const getUserData = async () => {
+      try {
+        const userResponse = await authService.getUser();
+        if (userResponse.success) {
+          setUserData(userResponse.data);
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error('Error fetching user:', error);
+        setIsLoggedIn(false);
+        setUserData(null);
+      }
+    };
+
+    getUserData();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await authService.logout();
+      if (response.success) {
+        // Clear user data and login status
+        setUserData(null);
+        setIsLoggedIn(false);
+        localStorage.removeItem('accessToken');
+        
+        // Show success message
+        toast.success('Logged out successfully');
+        
+        // Redirect to home page
+        router.push('/');
+      } else {
+        toast.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast.error('Failed to logout');
+    }
+  };
 
   const productItems = [
     { icon: Box, label: "Features", path: "/features" },
@@ -85,21 +129,15 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
               <DropdownMenuTrigger asChild>
                 <button className="h-10 px-[12px] py-[8px] bg-white dark:bg-[#242b3d] rounded-lg shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] border border-zinc-300 dark:border-gray-800 w-full flex items-center justify-between">
                   <span className="text-gray-900 dark:text-white text-base font-normal truncate">
-                    {isLoggedIn ? 'John Doe' : 'Guest User'}
+                    {isLoggedIn && userData ? userData.fullname : 'Guest User'}
                   </span>
                   <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-90" : ""}`} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[210px] p-1 dark:bg-[#242b3d] dark:border-gray-800" align="start">
-                {isLoggedIn ? (
+                {isLoggedIn && userData ? (
                   <>
-                    <DropdownMenuItem 
-                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
-                      onClick={() => router.push('/dashboard')}
-                    >
-                      <User className="h-4 w-4" />
-                      Profile
-                    </DropdownMenuItem>
+                    
                     <DropdownMenuItem 
                       className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
                       onClick={() => router.push('/dashboard')}
@@ -117,10 +155,7 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
                     <DropdownMenuSeparator className="my-1 dark:border-gray-700" />
                     <DropdownMenuItem 
                       className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-red-600"
-                      onClick={() => {
-                        setIsLoggedIn(false)
-                        router.push('/')
-                      }}
+                      onClick={handleLogout}
                     >
                       <LogOut className="h-4 w-4" />
                       Sign Out
@@ -128,94 +163,14 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
                   </>
                 ) : (
                   <>
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                          <LogIn className="h-4 w-4" />
-                          Sign In
-                        </DropdownMenuItem>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] dark:bg-[#1e2533] dark:border-gray-800">
-                        <DialogHeader>
-                          <DialogTitle className="dark:text-white">Sign In</DialogTitle>
-                        </DialogHeader>
-                        <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4 mt-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="email" className="dark:text-gray-300">Email</Label>
-                            <Input 
-                              id="email" 
-                              type="email" 
-                              required 
-                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="password" className="dark:text-gray-300">Password</Label>
-                            <Input 
-                              id="password" 
-                              type="password" 
-                              required 
-                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
-                            />
-                          </div>
-                          <Button 
-                            type="submit"
-                            className="w-full bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white mt-4"
-                          >
-                            Sign In
-                          </Button>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
+                    <DropdownMenuItem 
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => router.push('/auth/login')}
+                    >
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </DropdownMenuItem>
 
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                          <UserPlus className="h-4 w-4" />
-                          Sign Up
-                        </DropdownMenuItem>
-                      </DialogTrigger>
-                      <DialogContent className="sm:max-w-[425px] dark:bg-[#1e2533] dark:border-gray-800">
-                        <DialogHeader>
-                          <DialogTitle className="dark:text-white">Create Account</DialogTitle>
-                        </DialogHeader>
-                        <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4 mt-4">
-                          <div className="space-y-2">
-                            <Label htmlFor="name" className="dark:text-gray-300">Full Name</Label>
-                            <Input 
-                              id="name" 
-                              type="text" 
-                              required 
-                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="signup-email" className="dark:text-gray-300">Email</Label>
-                            <Input 
-                              id="signup-email" 
-                              type="email" 
-                              required 
-                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label htmlFor="signup-password" className="dark:text-gray-300">Password</Label>
-                            <Input 
-                              id="signup-password" 
-                              type="password" 
-                              required 
-                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
-                            />
-                          </div>
-                          <Button 
-                            type="submit"
-                            className="w-full bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white mt-4"
-                          >
-                            Create Account
-                          </Button>
-                        </form>
-                      </DialogContent>
-                    </Dialog>
                   </>
                 )}
               </DropdownMenuContent>

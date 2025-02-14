@@ -11,8 +11,8 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import RiskAssessment from "@/components/RiskAssessment/RiskAssessment"
+} from "../../../components/ui/select"
+import RiskAssessment from "../../../components/RiskAssessment/RiskAssessment"
 
 export default function LoanApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1)

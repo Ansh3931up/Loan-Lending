@@ -5,15 +5,15 @@ import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Button } from "../../../components/ui/button"
+import { Input } from "../../../components/ui/input"
+import { Card, CardContent, CardFooter, CardHeader } from "../../../components/ui/card"
 import { FaGithub } from "react-icons/fa"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { authService } from "@/services/auth.service"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs"
+import { authService } from "../../../services/auth.service"
 import { toast } from "sonner"
 import { useTheme } from "next-themes"
-import logo from '@/public/logo.png'
+import logo from '../../../../public/logo.png'
 
 export default function AuthPage() {
   const router = useRouter()

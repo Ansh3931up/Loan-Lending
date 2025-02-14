@@ -1,0 +1,4 @@
+{
+  "buildCommand": "npm install --include=optional sharp && next build",
+  "installCommand": "npm install"
+}

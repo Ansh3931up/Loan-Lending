@@ -1,0 +1,73 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+/vendor/
+
+# Testing
+/coverage/
+.nyc_output/
+
+# Production/Build
+/build/
+/dist/
+/out/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend specific
+# Cache
+.cache/
+.next/
+.nuxt/
+.gatsby/
+
+# Backend specific
+# Compiled output
+*.class
+*.jar
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.Python
+.python-version
+
+# Package files
+*.tar.gz
+*.zip
+*.rar
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Temporary files
+tmp/
+temp/

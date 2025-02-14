@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { ArrowRight, Shield, Zap, LineChart, Clock, Users, DollarSign, BadgeCheck, FileText, Brain, CheckCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 export default function Home() {
   const features = [
@@ -39,19 +40,22 @@ export default function Home() {
       icon: FileText,
       title: "Quick Application",
       description: "Fill in basic details and connect your financial accounts securely",
-      delay: 0
+      delay: 0,
+      iconBg: "bg-[#3cc7e5]/10"
     },
     {
       icon: Brain,
       title: "AI Analysis",
       description: "Our AI analyzes your spending patterns and financial behavior",
-      delay: 0.2
+      delay: 0.2,
+      iconBg: "bg-[#3cc7e5]/10"
     },
     {
       icon: CheckCircle,
       title: "Instant Decision",
       description: "Get your loan offer with personalized interest rates",
-      delay: 0.4
+      delay: 0.4,
+      iconBg: "bg-[#3cc7e5]/10"
     }
   ]
 
@@ -136,70 +140,53 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 px-4">
-        <div className="container mx-auto max-w-7xl">
-          <div className="bg-white dark:bg-[#1e2533] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
-            <div className="text-center mb-12">
-              <motion.h2 
+      <section className="py-8 bg-white  dark:bg-[#1e2533] rounded-2xl shadow-sm border border-gray-200 dark:border-gray-800 p-8">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-16"
+          >
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              How It Works
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              Get your loan approved in three simple steps with our AI-powered platform
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {steps.map((step, index) => (
+              <motion.div
+                key={step.title}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-3xl font-bold text-gray-900 dark:text-white mb-4"
+                transition={{ delay: step.delay }}
+                className="bg-white dark:bg-[#1e2533] rounded-xl p-6 text-center"
               >
-                How It Works
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-                className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
+                <div className={`w-16 h-16 ${step.iconBg} rounded-full flex items-center justify-center mx-auto mb-4`}>
+                  <step.icon className="h-8 w-8 text-[#3cc7e5]" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-gray-600 dark:text-gray-300">
+                  {step.description}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="flex justify-center">
+            <Link href="/apply">
+              <Button 
+                size="lg" 
+                className="bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white group px-8"
               >
-                Get your loan approved in three simple steps with our AI-powered platform
-              </motion.p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8">
-              {steps.map((step, index) => (
-                <motion.div
-                  key={step.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: step.delay }}
-                  className="relative"
-                >
-                  {/* Connector Line */}
-                  {index < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-1/4 right-0 w-full h-[2px] bg-gradient-to-r from-[#3cc7e5] to-transparent transform translate-y-4" />
-                  )}
-                  
-                  <div className="relative p-6 bg-white dark:bg-[#242b3d] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 hover:shadow-md transition-shadow">
-                    <div className="flex flex-col items-center text-center">
-                      <div className="w-16 h-16 bg-[#3cc7e5]/10 rounded-full flex items-center justify-center mb-4">
-                        <step.icon className="h-8 w-8 text-[#3cc7e5]" />
-                      </div>
-                      <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                        {step.title}
-                      </h3>
-                      <p className="text-gray-600 dark:text-gray-300">
-                        {step.description}
-                      </p>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="mt-12 text-center"
-            >
-              <Button size="lg" className="bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white group">
                 Start Application
                 <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition" />
               </Button>
-            </motion.div>
+            </Link>
           </div>
         </div>
       </section>

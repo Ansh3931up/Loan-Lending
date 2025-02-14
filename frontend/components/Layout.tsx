@@ -4,7 +4,7 @@ import { useState, ReactNode, useEffect } from "react"
 import Sidebar from "@/components/Sidebar"
 
 export default function Layout({ children }: { children: ReactNode }) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
 
   // Handle click outside to close sidebar on mobile
   useEffect(() => {

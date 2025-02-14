@@ -1,17 +1,27 @@
 'use client'
 
 import React, { useState } from "react"
-import { ChevronRight, Home, Box, BarChart2, FileText, Settings, HelpCircle, LogIn, User, Layers, Phone, Info, DollarSign, Sun, Moon } from "lucide-react"
+import { ChevronRight, Home, Box, BarChart2, FileText, Settings, HelpCircle, LogIn, User, Layers, Phone, Info, DollarSign, Sun, Moon, LogOut, UserPlus } from "lucide-react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
 
 interface SidebarProps {
   isSidebarOpen: boolean;
@@ -19,9 +29,11 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) {
-  const pathname = usePathname()
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const pathname = usePathname()
   const { theme, setTheme } = useTheme()
+  const router = useRouter()
 
   const productItems = [
     { icon: Box, label: "Features", path: "/features" },
@@ -72,20 +84,140 @@ export default function Sidebar({ isSidebarOpen, toggleSidebar }: SidebarProps) 
             <DropdownMenu open={isDropdownOpen} onOpenChange={setIsDropdownOpen}>
               <DropdownMenuTrigger asChild>
                 <button className="h-10 px-[12px] py-[8px] bg-white dark:bg-[#242b3d] rounded-lg shadow-[0px_1px_2px_0px_rgba(10,13,18,0.05)] border border-zinc-300 dark:border-gray-800 w-full flex items-center justify-between">
-                  <span className="text-gray-900 dark:text-white text-base font-normal truncate">User Name</span>
+                  <span className="text-gray-900 dark:text-white text-base font-normal truncate">
+                    {isLoggedIn ? 'John Doe' : 'Guest User'}
+                  </span>
                   <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${isDropdownOpen ? "rotate-90" : ""}`} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-[210px] p-1 dark:bg-[#242b3d] dark:border-gray-800" align="start">
-                <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
-                  Settings
-                </DropdownMenuItem>
-                <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-red-600">
-                  Sign Out
-                </DropdownMenuItem>
+                {isLoggedIn ? (
+                  <>
+                    <DropdownMenuItem 
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => router.push('/dashboard')}
+                    >
+                      <User className="h-4 w-4" />
+                      Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => router.push('/dashboard')}
+                    >
+                      <BarChart2 className="h-4 w-4" />
+                      Dashboard
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                      onClick={() => router.push('/settings')}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-1 dark:border-gray-700" />
+                    <DropdownMenuItem 
+                      className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md text-red-600"
+                      onClick={() => {
+                        setIsLoggedIn(false)
+                        router.push('/')
+                      }}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  <>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                          <LogIn className="h-4 w-4" />
+                          Sign In
+                        </DropdownMenuItem>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] dark:bg-[#1e2533] dark:border-gray-800">
+                        <DialogHeader>
+                          <DialogTitle className="dark:text-white">Sign In</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4 mt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="email" className="dark:text-gray-300">Email</Label>
+                            <Input 
+                              id="email" 
+                              type="email" 
+                              required 
+                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="password" className="dark:text-gray-300">Password</Label>
+                            <Input 
+                              id="password" 
+                              type="password" 
+                              required 
+                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <Button 
+                            type="submit"
+                            className="w-full bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white mt-4"
+                          >
+                            Sign In
+                          </Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md">
+                          <UserPlus className="h-4 w-4" />
+                          Sign Up
+                        </DropdownMenuItem>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px] dark:bg-[#1e2533] dark:border-gray-800">
+                        <DialogHeader>
+                          <DialogTitle className="dark:text-white">Create Account</DialogTitle>
+                        </DialogHeader>
+                        <form onSubmit={(e) => { e.preventDefault(); setIsLoggedIn(true); }} className="space-y-4 mt-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="name" className="dark:text-gray-300">Full Name</Label>
+                            <Input 
+                              id="name" 
+                              type="text" 
+                              required 
+                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="signup-email" className="dark:text-gray-300">Email</Label>
+                            <Input 
+                              id="signup-email" 
+                              type="email" 
+                              required 
+                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="signup-password" className="dark:text-gray-300">Password</Label>
+                            <Input 
+                              id="signup-password" 
+                              type="password" 
+                              required 
+                              className="dark:bg-[#242b3d] dark:border-gray-700 dark:text-white"
+                            />
+                          </div>
+                          <Button 
+                            type="submit"
+                            className="w-full bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white mt-4"
+                          >
+                            Create Account
+                          </Button>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

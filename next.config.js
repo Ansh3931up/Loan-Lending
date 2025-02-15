@@ -16,6 +16,7 @@ const nextConfig = {
         pathname: '/dyk154dvi/image/upload/**',
       }
     ],
+    unoptimized: true,
   },
 }
 

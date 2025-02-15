@@ -1,37 +1,32 @@
 {
-  "name": "bacxkend",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
   "type": "module",
+  "main": "src/index.js",
   "scripts": {
-    "start": "node ./src/index.js",
-    "build": "npm install && npm run build",
-    "dev": "nodemon ./src/index.js",
-    "setup": "node scripts/init.js"
+    "start": "node src/index.js",
+    "build": "mkdir -p build && cp -r src/* build/ && npm audit fix --force",
+    "dev": "nodemon src/index.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "dependencies": {
-    "bacxkend": "file:",
+
+    "backend": "file:",
     "bcrypt": "^5.1.1",
-    "bcryptjs": "^2.4.3",
-    "cloudinary": "^2.2.0",
+    "cloudinary": "^2.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
-    "crypto": "^1.0.1",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "dotenv": "^16.4.1",
+    "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.4.1",
+    "mongoose": "^8.1.1",
     "morgan": "^1.10.0",
     "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.13",
-    "prettier": "^3.3.2",
-    "razorpay": "^2.9.4"
+    "nodemailer": "^6.9.9"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

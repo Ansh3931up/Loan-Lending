@@ -4,12 +4,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
-interface Transaction {
+type Transaction = {
   id: string;
   amount: number;
-  status: 'APPROVED' | 'PENDING' | 'REJECTED';
+  status: "APPROVED" | "PENDING" | "REJECTED";
+  date: string;
   next_emi?: string;
-}
+  emi?: number;
+};
 
 export default function LoanDashboard({ userId }: { userId: string }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -21,7 +23,11 @@ export default function LoanDashboard({ userId }: { userId: string }) {
       try {
         setLoading(true);
         const history = await getTransactionHistory(userId);
-        setTransactions(history);
+        const typedHistory = history.map(item => ({
+          ...item,
+          status: item.status as "APPROVED" | "PENDING" | "REJECTED"
+        }));
+        setTransactions(typedHistory);
       } catch (err) {
         setError('Failed to fetch loan history');
         console.error(err);

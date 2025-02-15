@@ -38,6 +38,8 @@ export default function AuthPage() {
     role: "user" as "user" | "admin",
   })
 
+  const [error, setError] = useState<string | null>(null)
+
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -47,19 +49,19 @@ export default function AuthPage() {
     if (!mounted) return
     setLoading(true)
     try {
-      const response = await authService.login({
-        email: loginData.email,
-        password: loginData.password,
-      })
+      const response = await authService.login(
+        loginData.email,
+        loginData.password
+      )
       if (response.success) {
         toast.success("Login successful!")
         await new Promise(resolve => setTimeout(resolve, 100))
         window.location.href = "/questionnaire"
       } else {
-        toast.error("Login failed")
+        setError(response.message || "Login failed")
       }
     } catch (error: any) {
-      toast.error(error.response?.data?.message || "Login failed")
+      setError(error.response?.data?.message || "Login failed")
     } finally {
       setLoading(false)
     }

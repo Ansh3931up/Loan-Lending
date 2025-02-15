@@ -1,3 +1,4 @@
+
 'use client'
 import AccountDashboard from '@/components/AccountDashboard';
 import { Button } from "@/components/ui/button";
@@ -49,5 +50,6 @@ export default function Features() {
         </div>
       </div>
     </main>
+
   );
 }

@@ -13,10 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import RiskAssessment from "@/components/RiskAssessment/RiskAssessment"
+import  RiskAssessment  from "../../../components/RiskAssessment/RiskAssessment"
+import  KYCVerification  from "../../../components/KYCVerification"
 import { verifyKYC, createVirtualAccount } from '@/services/decentro'
 import { digilockerService } from '@/services/digilocker'
-import KYCVerification from "@/components/KYCVerification"
 
 export default function LoanApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1)

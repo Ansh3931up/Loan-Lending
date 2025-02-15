@@ -52,6 +52,21 @@ export default function QuestionnairePage() {
         questionId,
         answer: answer.toString() // Ensure answer is a string
       }));
+
+      // Map responses to risk factor prediction format
+      const predictionData = {
+        ApplicantIncome: Number(responses['q1']) * 1000,
+        CoapplicantIncome: Number(responses['q2']) * 1000,
+        LoanAmount: Number(responses['q3']) * 1000,
+        Loan_Amount_Term: Number(responses['q4']),
+        Credit_History: Number(responses['q5']) > 0 ? 1 : 0,
+        Gender: responses['q6'],
+        Married: responses['q7'],
+        Dependents: responses['q8'] === '3+' ? '3' : responses['q8'],
+        Education: responses['q9'],
+        Self_Employed: responses['q10'],
+        Property_Area: responses['q11']
+      };
       
       const riskFactor = await fetch("http://127.0.0.1:5000/predict", {
         method: "POST",
@@ -59,19 +74,7 @@ export default function QuestionnairePage() {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({
-          "ApplicantIncome": 5000,
-          "CoapplicantIncome": 2000,
-          "LoanAmount": 100,
-          "Loan_Amount_Term": 360,
-          "Credit_History": 1,
-          "Gender": "Male",
-          "Married": "Yes",
-          "Dependents": "0",
-          "Education": "Graduate",
-          "Self_Employed": "No",
-          "Property_Area": "Urban"
-        })
+        body: JSON.stringify(predictionData)
       });
 
       const response = await questionnaireService.submitQuestionnaire({

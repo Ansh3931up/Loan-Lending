@@ -1,55 +1,65 @@
 import axios from 'axios';
 
-const DECENTRO_BASE_URL = 'https://in.staging.decentro.tech/v2';
-const CLIENT_ID = process.env.NEXT_PUBLIC_DECENTRO_CLIENT_ID;
-const CLIENT_SECRET = process.env.NEXT_PUBLIC_DECENTRO_CLIENT_SECRET;
-const PROVIDER_SECRET = process.env.NEXT_PUBLIC_DECENTRO_PROVIDER_SECRET;
-const MODULE_SECRET = process.env.NEXT_PUBLIC_DECENTRO_MODULE_SECRET;
-
-const decentroApi = axios.create({
-  baseURL: DECENTRO_BASE_URL,
-  headers: {
-    'client_id': CLIENT_ID,
-    'client_secret': CLIENT_SECRET,
-    'module_secret': MODULE_SECRET,
-    'provider_secret': PROVIDER_SECRET,
-  }
-});
-
-export const verifyKYC = async (pan: string, aadhaar: string) => {
-  try {
-    const response = await decentroApi.post('/kyc/pan_verification', {
-      pan_number: pan,
-      consent: 'Y',
-      consent_purpose: 'For loan verification'
-    });
-    
-    return response.data;
-  } catch (error) {
-    console.error('KYC Verification Error:', error);
-    throw error;
-  }
+const BASE_URL = 'https://in.staging.decentro.tech/v2';
+const headers = {
+  'client-id': process.env.NEXT_PUBLIC_DECENTRO_CLIENT_ID!,
+  'client-secret': process.env.NEXT_PUBLIC_DECENTRO_CLIENT_SECRET!,
+  'module-secret': process.env.NEXT_PUBLIC_DECENTRO_MODULE_SECRET!,
+  'Content-Type': 'application/json'
 };
 
-export const createVirtualAccount = async (customerId: string, name: string) => {
+export const verifyKYC = async (params: {
+  reference_id: string;
+  document_type: string;
+  id_number: string;
+  consent: string;
+  consent_purpose: string;
+}) => {
+  const response = await axios.post('/api/kyc', params);
+  return response.data;
+};
+
+export const createVirtualAccount = async (formData: {
+  name: string;
+  customerId: string;
+  pan: string;
+  email: string;
+  mobile: string;
+}) => {
+  console.log('Calling createVirtualAccount API...');
+  
+  const payload = {
+    bank_codes: ["ICIC"], // Using ICICI Bank
+    name: formData.name,
+    pan: formData.pan,
+    email: formData.email,
+    mobile: formData.mobile,
+    kyc_verified: 1,
+    kyc_check_decentro: 0,
+    customer_id: formData.customerId,
+    virtual_account_balance_settlement: "enabled",
+    generate_static_qr: 1
+  };
+
+  console.log('Request Payload:', payload);
+
   try {
-    const response = await decentroApi.post('/banking/account/virtual', {
-      customer_id: customerId,
-      name: name,
-      bank_code: "ICIC", // ICICI Bank
-      account_type: "CURRENT"
-    });
-    
+    const response = await axios.post('/api/banking/virtual-account', payload);
+    console.log('API Response:', response.data);
     return response.data;
-  } catch (error) {
-    console.error('Virtual Account Creation Error:', error);
+  } catch (error: any) {
+    console.error('API Error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
     throw error;
   }
 };
 
 export const getTransactionHistory = async (accountId: string) => {
   try {
-    const response = await decentroApi.get(`/banking/account/transactions?account_id=${accountId}`);
+    const response = await axios.get(`${BASE_URL}/banking/account/transactions?account_id=${accountId}`);
     
     return response.data.data.map((transaction: any) => ({
       id: transaction.transactionId,
@@ -69,7 +79,7 @@ export const initiatePayment = async (
   purpose: string
 ) => {
   try {
-    const response = await decentroApi.post('/payments/upi/link', {
+    const response = await axios.post(`${BASE_URL}/payments/upi/link`, {
       amount: amount.toString(),
       payee_account: beneficiaryAccount,
       purpose_message: purpose,

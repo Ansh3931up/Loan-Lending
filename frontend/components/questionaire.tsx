@@ -8,9 +8,10 @@ import { motion, AnimatePresence } from "framer-motion"
 import toast from "react-hot-toast"
 
 interface Question {
-  question: string
-  answer: string
-  options?: string[]
+  id: string;
+  question: string;
+  type: "number" | "select";
+  options?: string[];
 }
 
 interface SurveyFormProps {
@@ -33,7 +34,7 @@ const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputCh
   const answeredQuestions = Object.keys(responses).length
 
   const handleNext = () => {
-    if (!responses[currentQuestion.question]) {
+    if (!responses[currentQuestion.id]) {
       toast.error('Please answer the current question')
       return
     }
@@ -101,44 +102,50 @@ const SurveyForm: React.FC<SurveyFormProps> = ({ questions, responses, onInputCh
             </div>
 
             {/* Question */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentIndex}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3 }}
-                className="flex-grow"
-              >
-                <h2 className="text-xl font-bold mb-6 text-gray-900">
-                  {currentQuestion.question}
-                  <span className="text-red-500">*</span>
-                </h2>
-
-                <div className="space-y-3">
-                  {currentQuestion.options?.map((option, index) => (
-                    <motion.button
-                      key={option}
-                      onClick={() => onCheckboxChange(currentQuestion.question, option)}
-                      className={`w-full p-3.5 text-left rounded-xl border-2 transition-all
-                        ${
-                          responses[currentQuestion.question] === option
+            <div className="flex-grow">
+              <h2 className="text-xl font-bold mb-6 text-gray-900">
+                {currentQuestion.question}
+                <span className="text-red-500">*</span>
+              </h2>
+              
+              <div className="space-y-3">
+                {currentQuestion.type === "select" ? (
+                  // Show options for select type questions
+                  <div className="space-y-2.5">
+                    {currentQuestion.options?.map((option, index) => (
+                      <motion.button
+                        key={option}
+                        onClick={() => onCheckboxChange(currentQuestion.id, option)}
+                        className={`w-full p-3.5 text-left rounded-xl border-2 transition-all
+                          ${responses[currentQuestion.id] === option
                             ? "bg-white border-gray-800 text-gray-900"
                             : "bg-white/80 border-transparent hover:bg-white text-gray-800"
-                        }
-                        focus:outline-none focus:ring-2 focus:ring-gray-800/20`}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      {option}
-                    </motion.button>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
+                          }
+                          focus:outline-none focus:ring-2 focus:ring-gray-800/20`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.1 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        {option}
+                      </motion.button>
+                    ))}
+                  </div>
+                ) : (
+                  // Show number input for number type questions
+                  <Input
+                    type="number"
+                    placeholder={`Enter ${currentQuestion.question}`}
+                    value={responses[currentQuestion.id] || ""}
+                    onChange={(e) => onInputChange(currentQuestion.id, e.target.value)}
+                    className="w-full p-3.5 rounded-xl border-2 border-transparent
+                      bg-white/80 placeholder:text-gray-500 text-gray-900
+                      focus:border-gray-800 focus:bg-white focus:ring-2 focus:ring-gray-800/20"
+                  />
+                )}
+              </div>
+            </div>
 
             {/* Navigation */}
             <div className="flex justify-between items-center mt-6">

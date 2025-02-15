@@ -285,106 +285,64 @@ const getUser=asyncHandler(async(req,res)=>{
 const defaultQuestions = [
     {
         id: "q1",
-        question: "What is your age?",
-        type: "select",
-        options: ["18-25", "26-35", "36-45", "46-55", "56+"]
+        question: "What is your monthly income (Applicant)?",
+        type: "number"
     },
     {
         id: "q2",
-        question: "What is your gender?",
-        type: "select",
-        options: ["Male", "Female", "Other", "Prefer not to say"]
+        question: "What is the co-applicant's monthly income?",
+        type: "number"
     },
     {
         id: "q3",
-        question: "What is your monthly income?",
-        type: "select",
-        options: ["Less than ₹25,000", "₹25,000-₹50,000", "₹50,001-₹75,000", "₹75,001-₹1,00,000", "More than ₹1,00,000"]
+        question: "What loan amount are you looking for?",
+        type: "number"
     },
     {
         id: "q4",
-        question: "Do you have any existing loans?",
+        question: "What loan amount term (in months) are you looking for?",
+        type: "number"
+    },
+    {
+        id: "q5",
+        question: "What is your credit history?",
+        type: "number"
+    },
+    {
+        id: "q6",
+        question: "What is your gender?",
+        type: "select",
+        options: ["Male", "Female"]
+    },
+    {
+        id: "q7",
+        question: "Are you married?",
         type: "select",
         options: ["Yes", "No"]
     },
     {
-        id: "q5",
-        question: "What is your employment status?",
-        type: "select",
-        options: ["Full-time employed", "Part-time employed", "Self-employed", "Unemployed", "Student"]
-    },
-    {
-        id: "q6",
-        question: "What is your credit score range?",
-        type: "select",
-        options: ["Below 600", "600-650", "651-700", "701-750", "Above 750", "Don't know"]
-    },
-    {
-        id: "q7",
-        question: "Do you have any outstanding loan amount?",
-        type: "number"
-    },
-    {
         id: "q8",
-        question: "What is your debt percentage?",
-        type: "number"
+        question: "How many dependents do you have?",
+        type: "select",
+        options: ["0", "1", "2", "3+"]
     },
     {
         id: "q9",
-        question: "Do you have any credit card debt?",
-        type: "number"
+        question: "What is your education level?",
+        type: "select",
+        options: ["Graduate", "Not Graduate"]
     },
     {
         id: "q10",
-        question: "Do you have any other income sources?",
+        question: "Are you self employed?",
         type: "select",
         options: ["Yes", "No"]
     },
     {
         id: "q11",
-        question: "Do you have any financial disputes?",
+        question: "What type of property area do you live in?",
         type: "select",
-        options: ["Yes", "No"]
-    },
-    {
-        id: "q12",
-        question: "Do you have any property ownership?",
-        type: "select",
-        options: ["Yes", "No"]
-    },
-    {
-        id: "q13",
-        question: "Do you have any investments?",
-        type: "select",
-        options: ["Yes", "No"]
-    },
-    {
-        id: "q14",
-        question: "Do you have any savings amount?",
-        type: "number"
-    },
-    {
-        id: "q15",
-        question: "Do you have any employment type?",
-        type: "select",
-        options: ["Full-time", "Part-time", "Self-employed", "Unemployed", "Student"]
-    },
-    {
-        id: "q16",
-        question: "Do you have any years in current job?",
-        type: "number"
-    },
-    {
-        id: "q17",
-        question: "Do you have any income steady?",
-        type: "select",
-        options: ["Yes", "No"]
-    },
-    {
-        id: "q18",
-        question: "Do you have any guarantor for someone else's loan?",
-        type: "select",
-        options: ["Yes", "No"]
+        options: ["Urban", "Rural"]
     }
 ];
 
@@ -417,98 +375,100 @@ export const getCurrentQuestionnaire = async (req, res) => {
         console.log("Found user:", user ? "Yes" : "No");
 
         // Return all questions in the desired format
-        const questions = [
-            {
-                question: "What is your age?",
-                answer: "",
-                options: ["18-25", "26-35", "36-45", "46-55", "56+"]
-            },
-            {
-                question: "What is your gender?",
-                answer: "",
-                options: ["Male", "Female", "Other", "Prefer not to say"]
-            },
-            {
-                question: "What is your monthly income?",
-                answer: "",
-                options: ["Less than ₹25,000", "₹25,000-₹50,000", "₹50,001-₹75,000", "₹75,001-₹1,00,000", "More than ₹1,00,000"]
-            },
-            {
-                question: "Do you have any existing loans?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "What is the total outstanding loan amount?",
-                answer: "",
-                options: ["Less than ₹5,00,000", "₹5,00,000-₹20,00,000", "₹20,00,001-₹50,00,000", "More than ₹50,00,000"]
-            },
-            {
-                question: "What percentage of monthly income do you spend on debts?",
-                answer: "",
-                options: ["0-20%", "21-40%", "41-60%", "More than 60%"]
-            },
-            {
-                question: "Do you have any credit card debt?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "Do you have any other sources of income?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "Are you currently employed?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "What is your employment type?",
-                answer: "",
-                options: ["Government Job", "Private Sector", "Business Owner", "Self-employed Professional", "Retired", "Unemployed"]
-            },
-            {
-                question: "How many years have you been in your current job/business?",
-                answer: "",
-                options: ["Less than 1 year", "1-3 years", "4-7 years", "8-10 years", "More than 10 years"]
-            },
-            {
-                question: "Is your income steady and consistent?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "What is your CIBIL score?",
-                answer: "",
-                options: ["Below 600", "600-699", "700-749", "750-799", "800+", "Don't know"]
-            },
-            {
-                question: "Do you own any property?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "Do you have any investments?",
-                answer: "",
-                options: ["Fixed Deposits", "Mutual Funds", "Stocks", "Real Estate", "Gold", "None"]
-            },
-            {
-                question: "What is the total amount of your savings?",
-                answer: "",
-                options: ["Less than ₹1,00,000", "₹1,00,000-₹5,00,000", "₹5,00,001-₹10,00,000", "₹10,00,001-₹25,00,000", "More than ₹25,00,000"]
-            },
-            {
-                question: "Do you have any financial disputes or bankruptcies in the last 5 years?",
-                answer: "",
-                options: ["Yes", "No"]
-            },
-            {
-                question: "Do you have any guarantor for someone else's loan?",
-                answer: "",
-                options: ["Yes", "No"]
-            }
-        ];
+        // const questions = [
+        //     {
+        //         question: "What is your age?",
+        //         answer: "",
+        //         options: ["18-25", "26-35", "36-45", "46-55", "56+"]
+        //     },
+        //     {
+        //         question: "What is your gender?",
+        //         answer: "",
+        //         options: ["Male", "Female", "Other", "Prefer not to say"]
+        //     },
+        //     {
+        //         question: "What is your monthly income?",
+        //         answer: "",
+        //         options: ["Less than ₹25,000", "₹25,000-₹50,000", "₹50,001-₹75,000", "₹75,001-₹1,00,000", "More than ₹1,00,000"]
+        //     },
+        //     {
+        //         question: "Do you have any existing loans?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "What is the total outstanding loan amount?",
+        //         answer: "",
+        //         options: ["Less than ₹5,00,000", "₹5,00,000-₹20,00,000", "₹20,00,001-₹50,00,000", "More than ₹50,00,000"]
+        //     },
+        //     {
+        //         question: "What percentage of monthly income do you spend on debts?",
+        //         answer: "",
+        //         options: ["0-20%", "21-40%", "41-60%", "More than 60%"]
+        //     },
+        //     {
+        //         question: "Do you have any credit card debt?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "Do you have any other sources of income?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "Are you currently employed?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "What is your employment type?",
+        //         answer: "",
+        //         options: ["Government Job", "Private Sector", "Business Owner", "Self-employed Professional", "Retired", "Unemployed"]
+        //     },
+        //     {
+        //         question: "How many years have you been in your current job/business?",
+        //         answer: "",
+        //         options: ["Less than 1 year", "1-3 years", "4-7 years", "8-10 years", "More than 10 years"]
+        //     },
+        //     {
+        //         question: "Is your income steady and consistent?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "What is your CIBIL score?",
+        //         answer: "",
+        //         options: ["Below 600", "600-699", "700-749", "750-799", "800+", "Don't know"]
+        //     },
+        //     {
+        //         question: "Do you own any property?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "Do you have any investments?",
+        //         answer: "",
+        //         options: ["Fixed Deposits", "Mutual Funds", "Stocks", "Real Estate", "Gold", "None"]
+        //     },
+        //     {
+        //         question: "What is the total amount of your savings?",
+        //         answer: "",
+        //         options: ["Less than ₹1,00,000", "₹1,00,000-₹5,00,000", "₹5,00,001-₹10,00,000", "₹10,00,001-₹25,00,000", "More than ₹25,00,000"]
+        //     },
+        //     {
+        //         question: "Do you have any financial disputes or bankruptcies in the last 5 years?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     },
+        //     {
+        //         question: "Do you have any guarantor for someone else's loan?",
+        //         answer: "",
+        //         options: ["Yes", "No"]
+        //     }
+        // ];
+
+        const questions = defaultQuestions;
 
         return res.json({
             success: true,
@@ -532,13 +492,125 @@ export const submitQuestionnaire = async (req, res) => {
     try {
         const { answers } = req.body;
         const userId = req.user._id;
+        console.log("Raw request body:", req.body);
+        console.log("Extracted answers:", answers);
+        console.log("User ID:", userId);
 
-        const questionnaire = await Questionaire.create({
+        // Validate answers array
+        if (!Array.isArray(answers.answers) || answers.answers.length !== 11) {
+            console.log("Validation failed - Array check:", {
+                isArray: Array.isArray(answers.answers),
+                length: answers.answers?.length
+            });
+            return res.status(400).json({
+                success: false,
+                message: "Invalid questionnaire format. All questions must be answered."
+            });
+        }
+
+        // Create a mapping object to store the processed answers
+        const processedAnswers = {
             userId,
             status: 'completed',
-            answers,
-            completedAt: new Date()
+            completedAt: new Date(),
+            answers:answers.answers,
+            ApplicantIncome: null,
+            CoapplicantIncome: null,
+            LoanAmount: null,
+            Loan_Amount_Term: null,
+            Credit_History: null,
+            Gender: null,
+            Married: null,
+            Dependents: null,
+            Education: null,
+            Self_Employed: null,
+            Property_Area: null
+        };
+
+        console.log("Processing answers...");
+        // Process answers and map them to the correct fields
+        answers.answers?.forEach((answer, index) => {
+            console.log(`Processing answer ${index + 1}:`, answer);
+            
+            if (!answer.questionId || answer.answer === undefined) {
+                console.error("Invalid answer format:", answer);
+                throw new Error(`Invalid answer format for question: ${JSON.stringify(answer)}`);
+            }
+
+            switch (answer.questionId) {
+                case 'q1':
+                    processedAnswers.ApplicantIncome = Number(answer.answer) * 1000;
+                    console.log("Set ApplicantIncome:", processedAnswers.ApplicantIncome);
+                    break;
+                case 'q2':
+                    processedAnswers.CoapplicantIncome = Number(answer.answer) * 1000;
+                    console.log("Set CoapplicantIncome:", processedAnswers.CoapplicantIncome);
+                    break;
+                case 'q3':
+                    processedAnswers.LoanAmount = Number(answer.answer) * 1000;
+                    console.log("Set LoanAmount:", processedAnswers.LoanAmount);
+                    break;
+                case 'q4':
+                    processedAnswers.Loan_Amount_Term = Number(answer.answer);
+                    console.log("Set Loan_Amount_Term:", processedAnswers.Loan_Amount_Term);
+                    break;
+                case 'q5':
+                    processedAnswers.Credit_History = Number(answer.answer) > 0 ? 1 : 0;
+                    console.log("Set Credit_History:", processedAnswers.Credit_History);
+                    break;
+                case 'q6':
+                    processedAnswers.Gender = answer.answer;
+                    console.log("Set Gender:", processedAnswers.Gender);
+                    break;
+                case 'q7':
+                    processedAnswers.Married = answer.answer;
+                    console.log("Set Married:", processedAnswers.Married);
+                    break;
+                case 'q8':
+                    processedAnswers.Dependents = answer.answer === '3+' ? '3' : answer.answer;
+                    console.log("Set Dependents:", processedAnswers.Dependents);
+                    break;
+                case 'q9':
+                    processedAnswers.Education = answer.answer;
+                    console.log("Set Education:", processedAnswers.Education);
+                    break;
+                case 'q10':
+                    processedAnswers.Self_Employed = answer.answer;
+                    console.log("Set Self_Employed:", processedAnswers.Self_Employed);
+                    break;
+                case 'q11':
+                    processedAnswers.Property_Area = answer.answer;
+                    console.log("Set Property_Area:", processedAnswers.Property_Area);
+                    break;
+                default:
+                    console.warn(`Unknown question ID: ${answer.questionId}`);
+            }
         });
+
+        console.log("Final processed answers:", processedAnswers);
+
+        // Validate processed answers
+        const requiredFields = [
+            'ApplicantIncome', 'CoapplicantIncome', 'LoanAmount', 
+            'Loan_Amount_Term', 'Credit_History', 'Gender', 'Married',
+            'Dependents', 'Education', 'Self_Employed', 'Property_Area'
+        ];
+
+        const missingFields = requiredFields.filter(field => 
+            processedAnswers[field] === null || processedAnswers[field] === undefined
+        );
+
+        if (missingFields.length > 0) {
+            console.error("Missing required fields:", missingFields);
+            return res.status(400).json({
+                success: false,
+                message: `Missing required fields: ${missingFields.join(', ')}`
+            });
+        }
+
+        console.log("Creating questionnaire in database...");
+        const questionnaire = await Questionaire.create(processedAnswers);
+        console.log("Questionnaire created successfully:", questionnaire);
 
         return res.json({
             success: true,
@@ -546,10 +618,14 @@ export const submitQuestionnaire = async (req, res) => {
             data: questionnaire
         });
     } catch (error) {
-        console.error("Submit error:", error);
+        console.error("Submit error:", {
+            message: error.message,
+            stack: error.stack
+        });
         return res.status(500).json({
             success: false,
-            message: "Failed to submit questionnaire"
+            message: "Failed to submit questionnaire",
+            error: error.message
         });
     }
 };

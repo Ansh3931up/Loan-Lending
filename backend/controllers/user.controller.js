@@ -8,7 +8,7 @@ import Questionaire from '../module/questionaire.model.js';
 // import crypto from "crypto";
 
 
-const generateAccessandrefershToken = async (userid) => {
+export const generateAccessandrefershToken = async (userid) => {
     try {
         const user = await User.findById(userid);
         if (!user) {
@@ -39,7 +39,7 @@ const options = {
     domain: process.env.NODE_ENV === "production" ? process.env.DOMAIN : 'localhost' // Add your domain in production
 };
 
-const register=asyncHandler(async(req,res)=>{
+export const register=asyncHandler(async(req,res)=>{
     const {fullname,email,password,State,Pincode,address,role}=req.body;
 
     if([fullname,email,password,State,Pincode,address].some((item)=>item?.trim()==='')){
@@ -120,7 +120,7 @@ const register=asyncHandler(async(req,res)=>{
         );
 
     }) 
-const login = asyncHandler(async (req, res) => {
+export const login = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     
     if (!email || !password) {
@@ -153,7 +153,7 @@ const login = asyncHandler(async (req, res) => {
         );
 });
 
-const logout=asyncHandler(async(req,res)=>{
+export const logout=asyncHandler(async(req,res)=>{
 
     const user=req.user;
     if(!user){
@@ -176,7 +176,7 @@ const logout=asyncHandler(async(req,res)=>{
     .json(new ApiResponse(200,{},"user logout "))
 })
 
-const updateQuestionaire = asyncHandler(async (req, res) => {
+export const updateQuestionaire = asyncHandler(async (req, res) => {
     const {
         age,
         gender,
@@ -274,7 +274,7 @@ const updateQuestionaire = asyncHandler(async (req, res) => {
         .json(new ApiResponse(200, questionaire, "Questionaire updated successfully"));
 });
 
-const getUser=asyncHandler(async(req,res)=>{
+export const getUser=asyncHandler(async(req,res)=>{
     const user=req.user;
     if(!user){
         throw new ApiError(404,"User not found");
@@ -282,7 +282,7 @@ const getUser=asyncHandler(async(req,res)=>{
     return res.status(200).json(new ApiResponse(200,user,"User fetched successfully"));
 })
 
-const defaultQuestions = [
+export const defaultQuestions = [
     {
         id: "q1",
         question: "What is your monthly income (Applicant)?",
@@ -346,7 +346,7 @@ const defaultQuestions = [
     }
 ];
 
-const getQuestionaire = asyncHandler(async (req, res) => {
+export const getQuestionaire = asyncHandler(async (req, res) => {
     // Get all questions from the database
     let questions = await Questionaire.find({})
         .select("-__v")
@@ -650,13 +650,41 @@ export const getStatus = async (req, res) => {
   }
 };
 
-export {register,login,logout,updateQuestionaire,getUser,getQuestionaire};
+export const submitRiskAssessment = async (req, res) => {
+    try {
+        const { loanStatus, confidence, probabilityApproved, probabilityRejected } = req.body;
+        const userId = req.user._id;
+        const user = await User.findById(userId);
+        if(!user){
+            throw new ApiError(404,"User not found");
+        }
+        user.riskAssessment.loanStatus=loanStatus;
+        user.riskAssessment.confidence=confidence;
+        user.riskAssessment.probabilityApproved=probabilityApproved;
+        user.riskAssessment.probabilityRejected=probabilityRejected;
+        user.riskAssessment.assessmentDate=new Date();
+        await user.save();
+        return res.json({
+            success:true,
+            message:"Risk assessment submitted successfully",
+            data:user.riskAssessment
+        });
+    } catch (error) {
+        return res.status(500).json({
+            success:false,
+            message:"Failed to submit risk assessment",
+            error:error.message
+        });
+    }
+}
 
 
 
 
-// export {register,login,logout,getProfile,forgot,reset,updateAccountDetails,changeCurrentPassword,getCurrentUser};-----------
+
+// export {register,login,logout,updateQuestionaire,getUser,getQuestionaire};
 
 
 
 
+// export {register,login,logout,getProfile,forgot,reset,updateAccountDetails,changeCurrentPassword,getCurrentUser}

@@ -6,7 +6,8 @@ import {
     getUser,
     getCurrentQuestionnaire,
     submitQuestionnaire,
-    getStatus
+    getStatus,
+    submitRiskAssessment
 } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js"
 import { verifyJWT } from "../middleware/auth.middleware.js";
@@ -23,5 +24,6 @@ router.route("/getuser").get(verifyJWT, getUser);
 router.route('/questionnaire').get(verifyJWT, getCurrentQuestionnaire);
 router.route('/questionnaire/submit').post(verifyJWT, submitQuestionnaire);
 router.route('/questionnaire/status').get(verifyJWT, getStatus);
+router.route('/questionnaire/submit-risk-assessment').post(verifyJWT, submitRiskAssessment);
 
 export default router;

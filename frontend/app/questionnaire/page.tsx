@@ -50,7 +50,7 @@ export default function QuestionnairePage() {
       // Transform responses object into the required format
       const formattedAnswers = Object.entries(responses).map(([questionId, answer]) => ({
         questionId,
-        answer: answer.toString() // Ensure answer is a string
+        answer: answer.toString()
       }));
 
       // Map responses to risk factor prediction format
@@ -68,7 +68,7 @@ export default function QuestionnairePage() {
         Property_Area: responses['q11']
       };
       
-      const riskFactor = await fetch("http://127.0.0.1:5000/predict", {
+      const riskFactorResponse = await fetch("http://127.0.0.1:5000/predict", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -77,12 +77,40 @@ export default function QuestionnairePage() {
         body: JSON.stringify(predictionData)
       });
 
+      if (!riskFactorResponse.ok) {
+        console.log('Failed to fetch risk factor prediction');
+      }
+
+      const riskFactorData = await riskFactorResponse?.json();
+
+      if (riskFactorResponse.ok) {
+        const riskAssessmentData = {
+          loanStatus: riskFactorData.loan_status,
+          confidence: riskFactorData.confidence,
+          probabilityApproved: riskFactorData.probability_approved,
+          probabilityRejected: riskFactorData.probability_rejected
+        }
+        const riskAssessmentResponse = await authService.submitRiskAssessment(riskAssessmentData);
+
+        if (riskAssessmentResponse.success) {
+          console.log("Risk assessment submitted successfully", riskAssessmentResponse.data);
+        } else {
+          console.error("Failed to submit risk assessment");
+        }
+      }
+      // Add risk factor results to the questionnaire submission
       const response = await questionnaireService.submitQuestionnaire({
-        answers: formattedAnswers
+        answers: formattedAnswers,
+        riskAssessment: {
+          loanStatus: riskFactorData.loan_status,
+          confidence: riskFactorData.confidence,
+          probabilityApproved: riskFactorData.probability_approved,
+          probabilityRejected: riskFactorData.probability_rejected
+        }
       });
 
       if (response.success) {
-        toast.success('Questionnaire submitted successfully!');
+        toast.success(`Questionnaire submitted successfully! Loan Status: ${riskFactorData.loan_status}`);
         router.push('/dashboard');
       } else {
         toast.error('Failed to submit questionnaire');

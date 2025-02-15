@@ -34,6 +34,23 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [role, setRole] = useState<'borrower' | 'lender'>('borrower')
+  const [userData, setUserData] = useState<any>(null);
+  
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await authService.getUser();
+        if (response.success) {
+          setUserData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -241,6 +258,96 @@ export default function DashboardPage() {
             <div className="mb-8">
               <LoanDashboard userId={userId} />
             </div>
+            {/* Risk Assessment Card */}
+            {userData?.riskAssessment && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 bg-white dark:bg-[#1e2533] rounded-xl p-6 border border-gray-200 dark:border-gray-800"
+              >
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                  Loan Risk Assessment
+                </h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`p-3 rounded-lg ${
+                        userData.riskAssessment.loanStatus === 'Approved' 
+                          ? 'bg-green-50 dark:bg-green-500/10' 
+                          : 'bg-red-50 dark:bg-red-500/10'
+                      }`}>
+                        {userData.riskAssessment.loanStatus === 'Approved' ? (
+                          <CheckCircle2 className={`h-6 w-6 ${
+                            userData.riskAssessment.loanStatus === 'Approved' 
+                              ? 'text-green-500' 
+                              : 'text-red-500'
+                          }`} />
+                        ) : (
+                          <XCircle className="h-6 w-6 text-red-500" />
+                        )}
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Loan Status</p>
+                        <h3 className={`text-lg font-semibold ${
+                          userData.riskAssessment.loanStatus === 'Approved' 
+                            ? 'text-green-500' 
+                            : 'text-red-500'
+                        }`}>
+                          {userData.riskAssessment.loanStatus}
+                        </h3>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Assessment Date: {new Date(userData.riskAssessment.assessmentDate).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Approval Probability</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {Math.round(userData.riskAssessment.probabilityApproved * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div 
+                          className="bg-green-500 h-2.5 rounded-full" 
+                          style={{ width: `${userData.riskAssessment.probabilityApproved * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Rejection Probability</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {Math.round(userData.riskAssessment.probabilityRejected * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div 
+                          className="bg-red-500 h-2.5 rounded-full" 
+                          style={{ width: `${userData.riskAssessment.probabilityRejected * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between mb-1">
+                        <span className="text-sm text-gray-600 dark:text-gray-400">Confidence Score</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white">
+                          {Math.round(userData.riskAssessment.confidence * 100)}%
+                        </span>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                        <div 
+                          className="bg-[#3cc7e5] h-2.5 rounded-full" 
+                          style={{ width: `${userData.riskAssessment.confidence * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* Applications List */}
             <div className="bg-white dark:bg-[#1e2533] rounded-xl shadow-sm border border-gray-200 dark:border-gray-800">

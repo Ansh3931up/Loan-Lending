@@ -4,7 +4,7 @@ import './globals.css'
 
 import Layout from '@/components/Layout'
 import { ThemeProvider } from "@/components/theme-provider"
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import { UserProvider } from '@/context/UserContext';
 
 
@@ -26,7 +26,7 @@ export default function RootLayout({
         >
           <Layout>
             {children}
-            <Toaster position="top-right" />
+            <Toaster richColors />
           </Layout>
              </ThemeProvider>
         </UserProvider>

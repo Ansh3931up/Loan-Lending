@@ -14,10 +14,33 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import RiskAssessment from "@/components/RiskAssessment/RiskAssessment"
+import { verifyKYC, createVirtualAccount } from '@/services/decentro'
+import { digilockerService } from '@/services/digilocker'
+import KYCVerification from "@/components/KYCVerification"
 
 export default function LoanApplicationForm() {
   const [currentStep, setCurrentStep] = useState(1)
   const totalSteps = 4
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    pan: '',
+    email: '',
+    phone: '',
+    employmentType: '',
+    monthlyIncome: '',
+    bankAccount: '',
+    loanAmount: '',
+    tenure: '',
+    purpose: ''
+  })
+  const [kycCompleted, setKycCompleted] = useState(() => {
+    // Check if KYC was previously completed
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('kycCompleted') === 'true';
+    }
+    return false;
+  });
 
   const steps = [
     { number: 1, title: "Personal Details", icon: User },
@@ -36,6 +59,99 @@ export default function LoanApplicationForm() {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1)
     }
+  }
+
+  const handleSubmit = async () => {
+    try {
+      // Validate required fields
+      if (!formData.pan) {
+        throw new Error('PAN number is required');
+      }
+
+      // Step 1: Verify KYC with proper data
+      const kycResult = await verifyKYC(
+        formData.pan,           // First argument: PAN number
+        'For loan verification' // Second argument: purpose
+      );
+      
+      if (kycResult.status === 'SUCCESS') {
+        // Step 2: Create Virtual Account with proper data
+        const accountResult = await createVirtualAccount(
+          `CUST_${formData.pan}`,                          // First argument: customerId
+          `${formData.firstName} ${formData.lastName}`.trim() // Second argument: name
+        );
+
+        localStorage.setItem('virtualAccountId', accountResult.data.account_id);
+        nextStep();
+      } else {
+        throw new Error('KYC verification failed');
+      }
+    } catch (error: any) {
+      console.error('Form submission error:', error);
+      // Show error to user (add toast or alert)
+      alert(error.message || 'An error occurred during verification');
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value
+    });
+  }
+
+  const handleDigilockerVerification = async () => {
+    try {
+      // 1. Initiate session
+      const session = await digilockerService.initiateSession();
+      
+      // 2. Get issued files
+      const files = await digilockerService.getIssuedFiles(session.decentroTxnId);
+      
+      // 3. Get Aadhaar data if available
+      const aadhaarFile = files.data.find(file => file.doctype === "ADHAR");
+      if (aadhaarFile) {
+        const aadhaarData = await digilockerService.getEAadhaar(session.decentroTxnId);
+        
+        // Update form with Aadhaar data
+        setFormData(prev => ({
+          ...prev,
+          firstName: aadhaarData.data.proofOfIdentity.name.split(' ')[0],
+          lastName: aadhaarData.data.proofOfIdentity.name.split(' ').slice(1).join(' ')
+        }));
+        
+        // Download Aadhaar PDF
+        const pdfBlob = await digilockerService.downloadFile(
+          session.decentroTxnId,
+          aadhaarFile.uri
+        );
+        
+        // Handle the downloaded file
+        const url = window.URL.createObjectURL(pdfBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'aadhaar.pdf';
+        a.click();
+      }
+    } catch (error) {
+      console.error('Digilocker verification failed:', error);
+      alert('Failed to verify documents');
+    }
+  };
+
+  const handleKYCComplete = () => {
+    setKycCompleted(true);
+    localStorage.setItem('kycCompleted', 'true');
+  };
+
+  if (!kycCompleted) {
+    return (
+      <div className="min-h-screen bg-[#FBFBFA] dark:bg-slate-700 py-12">
+        <div className="container mx-auto max-w-3xl px-4">
+          <KYCVerification onComplete={handleKYCComplete} />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -87,33 +203,92 @@ export default function LoanApplicationForm() {
             >
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Personal Details</h2>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Verify Your Identity</h2>
                   
+                  {/* Digilocker Section */}
+                  <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-100 dark:border-blue-800 mb-8">
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-full">
+                        <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Quick Verification</h3>
+                        <p className="text-sm text-gray-600 dark:text-gray-300">
+                          Verify your identity instantly using DigiLocker
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleDigilockerVerification}
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      size="lg"
+                    >
+                      <User className="mr-2 h-5 w-5" />
+                      Connect DigiLocker
+                    </Button>
+                  </div>
+
+                  {/* Manual Entry Form */}
                   <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">Or enter details manually</span>
+                      <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700"></div>
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="firstName">First Name</Label>
-                        <Input id="firstName" placeholder="Enter first name" />
+                        <Input 
+                          id="firstName" 
+                          value={formData.firstName}
+                          onChange={handleInputChange}
+                          placeholder="Enter first name" 
+                        />
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="lastName">Last Name</Label>
-                        <Input id="lastName" placeholder="Enter last name" />
+                        <Input 
+                          id="lastName" 
+                          value={formData.lastName}
+                          onChange={handleInputChange}
+                          placeholder="Enter last name" 
+                        />
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <Label htmlFor="pan">PAN Number</Label>
-                      <Input id="pan" placeholder="Enter PAN number" className="uppercase" />
+                      <Input 
+                        id="pan" 
+                        value={formData.pan}
+                        onChange={handleInputChange}
+                        placeholder="Enter PAN number" 
+                        className="uppercase" 
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="Enter email address" />
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        placeholder="Enter email address" 
+                      />
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" type="tel" placeholder="Enter phone number" />
+                      <Input 
+                        id="phone" 
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={handleInputChange}
+                        placeholder="Enter phone number" 
+                      />
                     </div>
                   </div>
                 </div>
@@ -226,7 +401,7 @@ export default function LoanApplicationForm() {
               </Button>
               
               <Button
-                onClick={nextStep}
+                onClick={handleSubmit}
                 className="bg-[#3cc7e5] hover:bg-[#3cc7e5]/90 text-white"
               >
                 Next Step

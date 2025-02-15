@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3014/api/v1';
 
@@ -18,20 +18,21 @@ axios.interceptors.request.use(
 );
 
 export const authService = {
-  async login(credentials: { email: string; password: string }) {
+  async login(email: string, password: string) {
     try {
-      const response = await axios.post(`${API_URL}/users/login`, credentials);
+      const response = await axios.post('/api/auth/login', { email, password });
       if (response.data.data.accessToken) {
         localStorage.setItem('accessToken', response.data.data.accessToken);
       }
       return {
         success: true,
-        user: response.data.data.user
+        data: response.data
       };
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        message: error.response?.data?.message || 'Login failed'
+        message: axiosError.response?.data?.message || 'Login failed'
       };
     }
   },
@@ -47,9 +48,10 @@ export const authService = {
         user: response.data.data.user
       };
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       return {
         success: false,
-        message: error.response?.data?.message || 'Signup failed'
+        message: axiosError.response?.data?.message || 'Signup failed'
       };
     }
   },
@@ -62,16 +64,39 @@ export const authService = {
         data: response.data.data
       };
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       localStorage.removeItem('accessToken'); // Clear token if invalid
       return {
         success: false,
-        message: error.response?.data?.message || 'Failed to fetch user'
+        message: axiosError.response?.data?.message || 'Failed to fetch user'
       };
     }
   },
 
-  logout() {
-    localStorage.removeItem('accessToken');
+  async logout() {
+    try {
+      // Call backend logout endpoint
+      const response = await axios.post(`${API_URL}/users/logout`);
+      console.log("Logout Response:", response);
+      
+      // Clear local storage
+      localStorage.removeItem('accessToken');
+      
+      return {
+        success: true,
+        message: 'Logged out successfully'
+      };
+    } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      console.error('Logout error:', error);
+      // Still clear local storage even if backend call fails
+      localStorage.removeItem('accessToken');
+      
+      return {
+        success: false,
+        message: axiosError.response?.data?.message || 'Logout failed'
+      };
+    }
   }
 };
 
@@ -82,8 +107,9 @@ export const questionnaireService = {
       console.log("Questionnaire Response:", response.data);
       return response.data;
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       console.error('Get questionnaire error:', error);
-      throw error;
+      throw axiosError;
     }
   },
 
@@ -92,8 +118,9 @@ export const questionnaireService = {
       const response = await axios.post(`${API_URL}/users/questionnaire/submit`, { answers });
       return response.data;
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       console.error('Submit questionnaire error:', error);
-      throw error;
+      throw axiosError;
     }
   },
 
@@ -102,8 +129,9 @@ export const questionnaireService = {
       const response = await axios.get(`${API_URL}/users/questionnaire/status`);
       return response.data;
     } catch (error) {
+      const axiosError = error as AxiosError<{ message: string }>;
       console.error('Get status error:', error);
-      throw error;
+      throw axiosError;
     }
   }
 }; 

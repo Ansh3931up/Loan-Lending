@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Check, Calendar, DollarSign, Percent, Clock, Download, Shield, ArrowRight } from "lucide-react"
@@ -157,7 +157,7 @@ export default function ConfirmPage() {
               Application Submitted Successfully!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-8">
-              Your loan application has been received. We'll process it and get back to you shortly.
+              Your loan application has been received. We will process it and get back to you shortly.
             </p>
             <div className="flex flex-col gap-4 items-center">
               <Button

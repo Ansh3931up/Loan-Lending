@@ -7,6 +7,18 @@ import { authService, questionnaireService } from '@/services/auth.service';
 import toast from 'react-hot-toast';
 import SurveyForm from "@/components/questionaire";
 
+// First, define the correct interface for your questionnaire submission
+interface QuestionnaireSubmission {
+  answers: Array<{
+    questionId: string;
+    answer: string;
+  }>;
+  riskAssessment: {
+    loanStatus: string;
+    confidence: number;
+  };
+}
+
 export default function QuestionnairePage() {
   const { user } = useUser();
   const router = useRouter();
@@ -47,13 +59,11 @@ export default function QuestionnairePage() {
 
   const handleSubmit = async () => {
     try {
-      // Transform responses object into the required format
       const formattedAnswers = Object.entries(responses).map(([questionId, answer]) => ({
         questionId,
         answer: answer.toString()
       }));
 
-      // Map responses to risk factor prediction format
       const predictionData = {
         ApplicantIncome: Number(responses['q1']) * 1000,
         CoapplicantIncome: Number(responses['q2']) * 1000,
@@ -98,16 +108,14 @@ export default function QuestionnairePage() {
           console.error("Failed to submit risk assessment");
         }
       }
-      // Add risk factor results to the questionnaire submission
+
       const response = await questionnaireService.submitQuestionnaire({
         answers: formattedAnswers,
         riskAssessment: {
           loanStatus: riskFactorData.loan_status,
-          confidence: riskFactorData.confidence,
-          probabilityApproved: riskFactorData.probability_approved,
-          probabilityRejected: riskFactorData.probability_rejected
+          confidence: riskFactorData.confidence
         }
-      });
+      } as QuestionnaireSubmission);
 
       if (response.success) {
         toast.success(`Questionnaire submitted successfully! Loan Status: ${riskFactorData.loan_status}`);

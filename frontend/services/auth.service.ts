@@ -96,8 +96,23 @@ export const authService = {
         success: false,
         message: axiosError.response?.data?.message || 'Logout failed'
       };
+    }},
+  async submitRiskAssessment(riskAssessmentData: { loanStatus: string; confidence: number; probabilityApproved: number; probabilityRejected: number }) {
+    try {
+      const response = await axios.post(`${API_URL}/users/questionnaire/submit-risk-assessment`, riskAssessmentData);
+      return {
+        success: true,
+        data: response.data.data
+      }
+    } catch (error) {
+      // console.error('Submit risk assessment error:', axiosError);
+      const axiosError = error as AxiosError<{ message: string }>;
+      return {
+        success: false,
+        message: axiosError.response?.data?.message || 'Failed to submit risk assessment'
+      }
     }
-  }
+  },
 };
 
 export const questionnaireService = {

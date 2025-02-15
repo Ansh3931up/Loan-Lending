@@ -73,6 +73,29 @@ const userSchema = new Schema({
     lastQuestionAnswered: {
         type: Number,
         default: 0
+    },
+    riskAssessment: {
+        loanStatus: {
+            type: String,
+            enum: ['Approved', 'Rejected', null],
+            default: null
+        },
+        confidence: {
+            type: Number,
+            default: null
+        },
+        probabilityApproved: {
+            type: Number,
+            default: null
+        },
+        probabilityRejected: {
+            type: Number,
+            default: null
+        },
+        assessmentDate: {
+            type: Date,
+            default: null
+        }
     }
 }, { timestamps: true });
 

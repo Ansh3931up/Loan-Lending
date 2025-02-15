@@ -12,14 +12,9 @@ const nextConfig = {
     ],
   },
   output: 'standalone',
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': path.resolve(__dirname),
-      '@/components': path.resolve(__dirname, 'components'),
-      '@/lib': path.resolve(__dirname, 'lib')
-    }
-    return config
+  experimental: {
+    appDir: true,
+    serverComponentsExternalPackages: ['sharp']
   }
 }
 

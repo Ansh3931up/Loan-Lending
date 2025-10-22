@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { questionnaireService } from '@/services/auth.service';
+import { questionnaireService } from '../../services/auth.service';
 
 export default function QuestionnairePopup() {
   const [showPopup, setShowPopup] = useState(false);

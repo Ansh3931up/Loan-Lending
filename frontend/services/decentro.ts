@@ -8,15 +8,21 @@ const headers = {
   'Content-Type': 'application/json'
 };
 
-export const verifyKYC = async (params: {
-  reference_id: string;
-  document_type: string;
-  id_number: string;
-  consent: string;
-  consent_purpose: string;
-}) => {
-  const response = await axios.post('/api/kyc', params);
-  return response.data;
+export const verifyKYC = async (pan: string, purpose?: string) => {
+  try {
+    // Use the purpose parameter if needed
+    const response = await fetch('/api/kyc/verify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ pan, purpose }),
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('KYC verification failed:', error);
+    throw error;
+  }
 };
 
 export const createVirtualAccount = async (formData: {

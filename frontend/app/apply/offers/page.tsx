@@ -4,7 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import { useRouter } from "next/navigation"
 import { Check, Clock, Calendar, DollarSign, Percent, ArrowRight, Shield, Trophy } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../../../components/ui/button"
 
 export default function OffersPage() {
   const router = useRouter()

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { ArrowRight, Shield, Zap, LineChart, Clock, Users, DollarSign, BadgeCheck, FileText, Brain, CheckCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../components/ui/button"
 import Link from "next/link"
 import { useEffect } from "react"
 

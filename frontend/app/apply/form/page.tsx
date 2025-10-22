@@ -76,10 +76,13 @@ export default function LoanApplicationForm() {
       
       if (kycResult.status === 'SUCCESS') {
         // Step 2: Create Virtual Account with proper data
-        const accountResult = await createVirtualAccount(
-          `CUST_${formData.pan}`,                          // First argument: customerId
-          `${formData.firstName} ${formData.lastName}`.trim() // Second argument: name
-        );
+        const accountResult = await createVirtualAccount({
+          customerId: `CUST_${formData.pan}`,
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
+          pan: formData.pan,
+          email: formData.email,
+          mobile: formData.phone
+        });
 
         localStorage.setItem('virtualAccountId', accountResult.data.account_id);
         nextStep();

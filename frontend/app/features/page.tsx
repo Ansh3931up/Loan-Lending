@@ -1,8 +1,8 @@
 
 'use client'
-import AccountDashboard from '@/components/AccountDashboard';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import AccountDashboard from '../../components/AccountDashboard';
+import { Button } from "../../components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
 
 export default function Features() {
   return (

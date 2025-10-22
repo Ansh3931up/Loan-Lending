@@ -1,11 +1,11 @@
 "use client"
 
 import { useState, useEffect } from "react";
-import { useUser } from '@/context/UserContext';
+import { useUser } from '../../context/UserContext';
 import { useRouter } from 'next/navigation';
-import { authService, questionnaireService } from '@/services/auth.service';
+import { authService, questionnaireService } from '../../services/auth.service';
 import toast from 'react-hot-toast';
-import SurveyForm from "@/components/questionaire";
+import SurveyForm from "../../components/questionaire";
 
 // First, define the correct interface for your questionnaire submission
 interface QuestionnaireSubmission {

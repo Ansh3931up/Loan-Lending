@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from "react"
-import LoanDashboard from "@/components/LoanDashboard"
-import { authService } from "@/services/auth.service"
+import LoanDashboard from "../../components/LoanDashboard"
+import { authService } from "../../services/auth.service"
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { 
@@ -21,14 +21,14 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "../../components/ui/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "../../components/ui/select"
 
 export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null)
